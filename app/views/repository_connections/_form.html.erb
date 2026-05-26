@@ -1,0 +1,14 @@
+<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+  <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Update Connection</h2>
+  <%= form_with model: form_model, url: form_url, scope: :repository_connection, method: :patch, local: true, class: "mt-4 grid gap-3 sm:grid-cols-2" do |form| %>
+    <%= form.text_field :name, value: repository_connection.name, placeholder: "Connection name", required: true, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+    <%= form.select :provider, RepositoryConnection::PROVIDERS.map { |provider| [provider.titleize, provider] }, { selected: repository_connection.provider }, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+    <%= form.url_field :endpoint_url, value: repository_connection.endpoint_url, required: true, class: "sm:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+    <%= form.text_field :auth_username, value: repository_connection.auth_username, required: true, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+    <%= form.password_field :auth_secret, placeholder: "New secret (optional)", class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+    <%= form.text_area :ca_bundle, value: repository_connection.ca_bundle, placeholder: "Optional CA bundle (PEM)", rows: 3, class: "sm:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+    <div class="sm:col-span-2">
+      <%= form.submit "Save changes", class: "rounded-full bg-fuchsia-600 px-5 py-2 text-sm font-medium text-white" %>
+    </div>
+  <% end %>
+</div>

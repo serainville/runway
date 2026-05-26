@@ -1,0 +1,47 @@
+<section class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">Project Repository Connections</h1>
+    <p class="mt-2 text-slate-600 dark:text-slate-300">Create repository endpoints and auth scoped to <%= @project.name %>. Only project owners can add new connections.</p>
+  </div>
+
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <%= form_with model: [@project, @repository_connection], url: project_repository_connections_path(@project), scope: :repository_connection, local: true, class: "grid gap-3 sm:grid-cols-2" do |form| %>
+      <%= form.text_field :name, placeholder: "Connection name", required: true, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.select :provider, RepositoryConnection::PROVIDERS.map { |provider| [provider.titleize, provider] }, {}, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.url_field :endpoint_url, placeholder: "Repository endpoint URL", required: true, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.text_field :auth_username, placeholder: "Auth username", required: true, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.password_field :auth_secret, placeholder: "Auth secret", required: true, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.text_area :ca_bundle, placeholder: "Optional CA bundle (PEM)", rows: 3, class: "sm:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <div class="sm:col-span-2">
+        <%= form.submit "Add project repository", class: "rounded-full bg-fuchsia-600 px-5 py-2 text-sm font-medium text-white" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <table class="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-white/10">
+      <thead class="bg-slate-50 dark:bg-white/5">
+        <tr>
+          <th class="px-4 py-3">Name</th>
+          <th class="px-4 py-3">Provider</th>
+          <th class="px-4 py-3">Endpoint</th>
+          <th class="px-4 py-3">Validation</th>
+          <th class="px-4 py-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200 dark:divide-white/10">
+        <% @repository_connections.each do |connection| %>
+          <tr>
+            <td class="px-4 py-3"><%= connection.name %></td>
+            <td class="px-4 py-3"><%= connection.provider %></td>
+            <td class="px-4 py-3 break-all"><%= connection.endpoint_url %></td>
+            <td class="px-4 py-3"><div class="font-medium"><%= connection.validation_status %></div></td>
+            <td class="px-4 py-3">
+              <%= link_to "View", project_repository_connection_path(@project, connection), class: "rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700 dark:border-white/10 dark:text-slate-200" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>

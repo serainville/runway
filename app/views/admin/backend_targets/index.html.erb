@@ -1,0 +1,57 @@
+<section class="space-y-8">
+  <div>
+    <h1 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">Admin Backend Setup</h1>
+    <p class="mt-2 text-slate-600 dark:text-slate-300">Configure backend targets for Kubernetes clusters and Docker hosts.</p>
+  </div>
+
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <h2 class="text-lg font-semibold">Add backend target</h2>
+    <%= form_with model: [:admin, @backend_target], url: admin_backend_targets_path, scope: :backend_target, local: true, class: "mt-4 grid gap-3 sm:grid-cols-2" do |form| %>
+      <%= form.text_field :name, placeholder: "Name", required: true, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.select :backend_type, DeploymentTarget::BACKEND_TYPES.map { |type| [type.titleize, type] }, {}, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.text_field :endpoint, placeholder: "Endpoint", required: true, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.text_field :credential_reference, placeholder: "Service account token", class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.text_area :ca_bundle_reference, placeholder: "CA bundle", rows: 4, class: "sm:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.text_field :description, placeholder: "Description", class: "sm:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <div class="sm:col-span-2">
+        <%= form.submit "Add backend", class: "rounded-full bg-fuchsia-600 px-5 py-2 text-sm font-medium text-white" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <table class="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-white/10">
+      <thead class="bg-slate-50 dark:bg-white/5">
+        <tr>
+          <th class="px-4 py-3">Name</th>
+          <th class="px-4 py-3">Type</th>
+          <th class="px-4 py-3">Endpoint</th>
+          <th class="px-4 py-3">Validation</th>
+          <th class="px-4 py-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200 dark:divide-white/10">
+        <% @backend_targets.each do |target| %>
+          <tr>
+            <td class="px-4 py-3"><%= target.name %></td>
+            <td class="px-4 py-3"><%= target.backend_type %></td>
+            <td class="px-4 py-3"><%= target.endpoint %></td>
+            <td class="px-4 py-3"><%= target.validation_status %></td>
+            <td class="px-4 py-3">
+              <div class="flex flex-wrap items-center gap-2">
+              <%= form_with model: [:admin, target], url: admin_backend_target_path(target), scope: :backend_target, method: :patch, local: true, class: "flex flex-wrap items-center gap-2" do |form| %>
+                <%= form.select :backend_type, DeploymentTarget::BACKEND_TYPES.map { |type| [type.titleize, type] }, {}, class: "rounded-lg border border-slate-300 bg-white px-2 py-1 dark:border-white/10 dark:bg-slate-950/60" %>
+                <%= form.text_field :endpoint, class: "rounded-lg border border-slate-300 bg-white px-2 py-1 dark:border-white/10 dark:bg-slate-950/60" %>
+                <%= form.text_field :credential_reference, placeholder: "Token", class: "rounded-lg border border-slate-300 bg-white px-2 py-1 dark:border-white/10 dark:bg-slate-950/60" %>
+                <%= form.text_area :ca_bundle_reference, placeholder: "CA bundle", rows: 3, class: "rounded-lg border border-slate-300 bg-white px-2 py-1 dark:border-white/10 dark:bg-slate-950/60" %>
+                <%= form.submit "Update", class: "rounded-full bg-fuchsia-600 px-3 py-1 text-xs font-medium text-white" %>
+              <% end %>
+                <%= button_to "Validate", validate_connection_admin_backend_target_path(target), method: :patch, class: "rounded-full bg-slate-800 px-3 py-1 text-xs font-medium text-white dark:bg-slate-200 dark:text-slate-900" %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>

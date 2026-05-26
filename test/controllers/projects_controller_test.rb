@@ -1,6 +1,12 @@
 require "test_helper"
 
 class ProjectsControllerTest < ActionDispatch::IntegrationTest
+  class FakeRepositoryVerifierSuccess
+    def self.call(**)
+      Struct.new(:success?, :error, :message, keyword_init: true).new(success?: true)
+    end
+  end
+
   test "redirects unauthenticated user from project list" do
     get projects_url
 
@@ -10,7 +16,7 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
   test "allows authenticated user to create and list own projects" do
     post session_url, params: {
       session: {
-        email: users(:one).email,
+        username: users(:one).username,
         password: "password123"
       }
     }
@@ -27,7 +33,7 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
   test "shows project applications and state" do
     post session_url, params: {
       session: {
-        email: users(:one).email,
+        username: users(:one).username,
         password: "password123"
       }
     }
@@ -39,12 +45,10 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
         name: "Portal API",
         description: "Tenant portal API",
         runtime_key: "ruby-4",
-        repository: {
-          provider: "gitlab",
-          repo_url: "https://gitlab.example.com/tenant/portal-api.git",
-          default_branch: "main"
-        }
-      }
+        repository_url: "https://gitlab.example.com/tenant/portal-api.git",
+        repository_connection_id: repository_connections(:project_one_gitlab).id
+      },
+      verifier: FakeRepositoryVerifierSuccess
     )
 
     get project_url(projects(:one))
@@ -60,7 +64,7 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
 
     post session_url, params: {
       session: {
-        email: users(:two).email,
+        username: users(:two).username,
         password: "password123"
       }
     }
@@ -72,7 +76,7 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
   test "renders the project creation form" do
     post session_url, params: {
       session: {
-        email: users(:one).email,
+        username: users(:one).username,
         password: "password123"
       }
     }

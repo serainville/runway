@@ -11,7 +11,7 @@ module Authentication
     end
 
     def call
-      user = User.new(params)
+      user = User.new(params.slice(:name, :email, :username, :password, :password_confirmation))
 
       if user.save
         user.external_identities.create!(provider: "local", external_subject: user.email)
@@ -21,7 +21,7 @@ module Authentication
           action: "user.registered",
           auditable: user,
           metadata: {
-            email: user.email,
+            username: user.username,
             provider: "local"
           }
         )

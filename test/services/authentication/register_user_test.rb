@@ -9,6 +9,7 @@ class AuthenticationRegisterUserTest < ActiveSupport::TestCase
           params: {
             name: "Service User",
             email: "service.user@example.com",
+            username: "serviceuser",
             password: "password123",
             password_confirmation: "password123"
           }
@@ -27,6 +28,7 @@ class AuthenticationRegisterUserTest < ActiveSupport::TestCase
       params: {
         name: "",
         email: "bad-email",
+        username: "",
         password: "short",
         password_confirmation: "short"
       }

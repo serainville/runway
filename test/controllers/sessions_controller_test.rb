@@ -12,7 +12,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_difference("AuditEvent.count", 1) do
       post session_url, params: {
         session: {
-          email: users(:one).email,
+          username: users(:one).username,
           password: "password123"
         }
       }
@@ -25,19 +25,19 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "rejects invalid credentials" do
     post session_url, params: {
       session: {
-        email: users(:one).email,
+        username: users(:one).username,
         password: "wrong-password"
       }
     }
 
     assert_response :unprocessable_entity
-    assert_includes response.body, "Invalid email or password"
+    assert_includes response.body, "Invalid username or password"
   end
 
   test "signs out and clears protected access" do
     post session_url, params: {
       session: {
-        email: users(:one).email,
+        username: users(:one).username,
         password: "password123"
       }
     }

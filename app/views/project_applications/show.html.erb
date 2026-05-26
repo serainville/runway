@@ -36,11 +36,11 @@
         </div>
         <div>
           <div class="text-slate-500 dark:text-slate-400">URL</div>
-          <div class="mt-1 break-all font-medium text-slate-900 dark:text-white"><%= @application.repository_connection.repo_url %></div>
+          <div class="mt-1 break-all font-medium text-slate-900 dark:text-white"><%= @application.repository_url %></div>
         </div>
         <div>
-          <div class="text-slate-500 dark:text-slate-400">Default branch</div>
-          <div class="mt-1 font-medium text-slate-900 dark:text-white"><%= @application.repository_connection.default_branch %></div>
+          <div class="text-slate-500 dark:text-slate-400">Connection endpoint</div>
+          <div class="mt-1 break-all font-medium text-slate-900 dark:text-white"><%= @application.repository_connection.endpoint_url %></div>
         </div>
       </div>
     </div>

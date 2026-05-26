@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
-  helper_method :current_user, :authenticated?
+  helper_method :current_user, :authenticated?, :admin?
 
   private
 
@@ -33,5 +33,18 @@ class ApplicationController < ActionController::Base
     return if current_user
 
     render json: { error: "Authentication required" }, status: :unauthorized
+  end
+
+  def admin?
+    current_user&.admin?
+  end
+
+  def require_admin!
+    return if admin?
+
+    respond_to do |format|
+      format.json { render json: { error: "Admin access required" }, status: :forbidden }
+      format.any { head :forbidden }
+    end
   end
 end

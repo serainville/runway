@@ -6,13 +6,9 @@ class ApplicationEnvironmentsControllerTest < ActionDispatch::IntegrationTest
       project: projects(:one),
       name: "Env App",
       runtime: "ruby",
-      runtime_version: "4"
-    )
-    RepositoryConnection.create!(
-      application: app,
-      provider: "gitlab",
-      repo_url: "https://gitlab.example.com/tenant/env-app.git",
-      default_branch: "main"
+      runtime_version: "4",
+      repository_url: "https://gitlab.example.com/tenant/env-app.git",
+      repository_connection: repository_connections(:project_one_gitlab)
     )
     environment = Environment.create!(
       application: app,
@@ -23,7 +19,7 @@ class ApplicationEnvironmentsControllerTest < ActionDispatch::IntegrationTest
 
     post session_url, params: {
       session: {
-        email: users(:one).email,
+        username: users(:one).username,
         password: "password123"
       }
     }
@@ -39,13 +35,9 @@ class ApplicationEnvironmentsControllerTest < ActionDispatch::IntegrationTest
       project: projects(:one),
       name: "Restricted Env App",
       runtime: "ruby",
-      runtime_version: "4"
-    )
-    RepositoryConnection.create!(
-      application: app,
-      provider: "gitlab",
-      repo_url: "https://gitlab.example.com/tenant/restricted-env.git",
-      default_branch: "main"
+      runtime_version: "4",
+      repository_url: "https://gitlab.example.com/tenant/restricted-env-app.git",
+      repository_connection: repository_connections(:project_one_gitlab)
     )
     environment = Environment.create!(
       application: app,
@@ -56,7 +48,7 @@ class ApplicationEnvironmentsControllerTest < ActionDispatch::IntegrationTest
 
     post session_url, params: {
       session: {
-        email: users(:two).email,
+        username: users(:two).username,
         password: "password123"
       }
     }

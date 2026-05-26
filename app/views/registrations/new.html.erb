@@ -1,29 +1,43 @@
-<main class="container">
-  <h1>Create your account</h1>
+<section class="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+  <div class="mb-8">
+    <span class="inline-flex rounded-full border border-fuchsia-200 bg-fuchsia-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-fuchsia-700 dark:border-fuchsia-400/20 dark:bg-fuchsia-500/10 dark:text-fuchsia-200">Account</span>
+    <h1 class="mt-4 text-4xl font-semibold tracking-tight text-slate-900 dark:text-white">Create your account</h1>
+    <p class="mt-3 text-slate-600 dark:text-slate-300">Start using Runway with app-centric deployment workflows.</p>
+  </div>
 
-  <%= form_with scope: :user, url: registration_path, local: true do |form| %>
-    <div>
-      <%= form.label :name %>
-      <%= form.text_field :name, required: true %>
+  <%= form_with scope: :user, url: registration_path, local: true, class: "space-y-6" do |form| %>
+    <div class="grid gap-6 sm:grid-cols-2">
+      <div>
+        <%= form.label :name, class: "mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200" %>
+        <%= form.text_field :name, required: true, class: "w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/20 dark:border-white/10 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-500" %>
+      </div>
+
+      <div>
+        <%= form.label :username, class: "mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200" %>
+        <%= form.text_field :username, required: true, autocomplete: "username", class: "w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/20 dark:border-white/10 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-500" %>
+      </div>
     </div>
 
     <div>
-      <%= form.label :email %>
-      <%= form.email_field :email, required: true, autocomplete: "email" %>
+      <%= form.label :email, class: "mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200" %>
+      <%= form.email_field :email, required: true, autocomplete: "email", class: "w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/20 dark:border-white/10 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-500" %>
     </div>
 
-    <div>
-      <%= form.label :password %>
-      <%= form.password_field :password, required: true, autocomplete: "new-password" %>
+    <div class="grid gap-6 sm:grid-cols-2">
+      <div>
+        <%= form.label :password, class: "mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200" %>
+        <%= form.password_field :password, required: true, autocomplete: "new-password", class: "w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/20 dark:border-white/10 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-500" %>
+      </div>
+
+      <div>
+        <%= form.label :password_confirmation, class: "mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200" %>
+        <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", class: "w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/20 dark:border-white/10 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-500" %>
+      </div>
     </div>
 
-    <div>
-      <%= form.label :password_confirmation %>
-      <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password" %>
-    </div>
-
-    <div>
-      <%= form.submit "Create account" %>
+    <div class="flex flex-wrap gap-3 pt-2">
+      <%= form.submit "Create account", class: "rounded-full bg-fuchsia-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-fuchsia-500" %>
+      <%= link_to "Back to sign in", new_session_path, class: "rounded-full border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/10" %>
     </div>
   <% end %>
-</main>
+</section>

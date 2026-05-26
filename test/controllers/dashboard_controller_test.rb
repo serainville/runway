@@ -10,7 +10,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
   test "allows authenticated users" do
     post session_url, params: {
       session: {
-        email: users(:one).email,
+        username: users(:one).username,
         password: "password123"
       }
     }
@@ -23,5 +23,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Create application"
     assert_includes response.body, projects(:one).name
     assert_includes response.body, "Applications"
+    assert_includes response.body, "data-turbo=\"false\""
+    assert_includes response.body, "_method"
   end
 end

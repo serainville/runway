@@ -3,8 +3,8 @@
 
   <%= form_with scope: :session, url: session_path, local: true do |form| %>
     <div>
-      <%= form.label :email %>
-      <%= form.email_field :email, required: true, autocomplete: "email" %>
+      <%= form.label :username %>
+      <%= form.text_field :username, required: true, autocomplete: "username" %>
     </div>
 
     <div>

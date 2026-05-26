@@ -2,10 +2,21 @@
 
 one:
   email: owner@example.com
+  username: owner
   name: Owner User
+  role: member
   password_digest: <%= BCrypt::Password.create("password123") %>
 
 two:
   email: member@example.com
+  username: member
   name: Member User
+  role: member
+  password_digest: <%= BCrypt::Password.create("password123") %>
+
+admin:
+  email: admin@example.com
+  username: admin
+  name: Admin User
+  role: admin
   password_digest: <%= BCrypt::Password.create("password123") %>

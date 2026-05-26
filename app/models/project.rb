@@ -1,6 +1,7 @@
 class Project < ApplicationRecord
   has_many :project_memberships, dependent: :destroy
   has_many :applications, dependent: :destroy
+  has_many :repository_connections, dependent: :destroy
   has_many :users, through: :project_memberships
   has_many :audit_events, as: :auditable, dependent: :nullify
 

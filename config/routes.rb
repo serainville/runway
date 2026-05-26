@@ -4,7 +4,24 @@ Rails.application.routes.draw do
   resource :session, only: [:new, :create, :destroy]
   resource :dashboard, only: [:show], controller: :dashboard
   resource :account, only: [:show]
+  patch "account/password", to: "accounts#password", as: :account_password
+  namespace :admin do
+    resources :users, only: [:index, :update] do
+      patch :reset_password, on: :member
+    end
+    resources :projects, only: [:index, :update]
+    resources :project_applications, only: [:index, :update]
+    resources :repository_connections, only: [:index, :show, :create, :update, :destroy] do
+      patch :validate_connection, on: :member
+    end
+    resources :backend_targets, only: [:index, :create, :update, :destroy] do
+      patch :validate_connection, on: :member
+    end
+  end
   resources :projects, only: [:index, :show, :new, :create] do
+    resources :repository_connections, only: [:index, :show, :create, :update, :destroy], controller: :project_repository_connections do
+      patch :validate_connection, on: :member
+    end
     resources :applications, only: [:index, :show, :new, :create], controller: :project_applications do
       resources :environments, only: [:show], controller: :application_environments
     end

@@ -10,12 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_200600) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_013000) do
   create_table "applications", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name", null: false
     t.integer "project_id"
+    t.integer "repository_connection_id"
+    t.string "repository_url", default: "", null: false
     t.string "runtime"
     t.integer "runtime_option_id"
     t.string "runtime_version"
@@ -25,6 +27,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_200600) do
     t.index ["project_id", "name"], name: "index_applications_on_project_id_and_name", unique: true
     t.index ["project_id", "slug"], name: "index_applications_on_project_id_and_slug", unique: true
     t.index ["project_id"], name: "index_applications_on_project_id"
+    t.index ["repository_connection_id"], name: "index_applications_on_repository_connection_id"
     t.index ["runtime_option_id"], name: "index_applications_on_runtime_option_id"
     t.index ["team_id", "name"], name: "index_applications_on_team_id_and_name", unique: true
     t.index ["team_id", "slug"], name: "index_applications_on_team_id_and_slug", unique: true
@@ -48,10 +51,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_200600) do
   end
 
   create_table "deployment_targets", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.string "backend_type", default: "kubernetes", null: false
+    t.string "ca_bundle_reference", default: "", null: false
     t.datetime "created_at", null: false
+    t.string "credential_reference", default: "", null: false
     t.string "description"
+    t.string "endpoint", default: "https://unconfigured.local", null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
+    t.string "validation_status", default: "pending", null: false
+    t.index ["active"], name: "index_deployment_targets_on_active"
+    t.index ["backend_type"], name: "index_deployment_targets_on_backend_type"
     t.index ["name"], name: "index_deployment_targets_on_name", unique: true
   end
 
@@ -113,13 +124,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_200600) do
   end
 
   create_table "repository_connections", force: :cascade do |t|
-    t.integer "application_id", null: false
+    t.text "auth_secret_ciphertext", default: "", null: false
+    t.string "auth_username", default: "", null: false
+    t.text "ca_bundle", default: "", null: false
     t.datetime "created_at", null: false
-    t.string "default_branch", null: false
+    t.string "endpoint_url", default: "", null: false
+    t.string "name", default: "", null: false
+    t.integer "project_id"
     t.string "provider", null: false
-    t.string "repo_url", null: false
+    t.string "scope", default: "project", null: false
     t.datetime "updated_at", null: false
-    t.index ["application_id"], name: "index_repository_connections_on_application_id", unique: true
+    t.string "validation_status", default: "pending", null: false
+    t.index ["project_id"], name: "index_repository_connections_on_project_id"
+    t.index ["scope", "project_id", "name"], name: "index_repository_connections_on_scope_project_and_name", unique: true
+    t.index ["validation_status"], name: "index_repository_connections_on_validation_status"
   end
 
   create_table "runtime_options", force: :cascade do |t|
@@ -144,11 +162,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_200600) do
     t.string "email", null: false
     t.string "name", null: false
     t.string "password_digest"
+    t.string "role", default: "member", null: false
     t.datetime "updated_at", null: false
+    t.string "username", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["role"], name: "index_users_on_role"
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "applications", "projects"
+  add_foreign_key "applications", "repository_connections"
   add_foreign_key "applications", "runtime_options"
   add_foreign_key "applications", "teams"
   add_foreign_key "audit_events", "teams"
@@ -160,5 +183,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_200600) do
   add_foreign_key "memberships", "users"
   add_foreign_key "project_memberships", "projects"
   add_foreign_key "project_memberships", "users"
-  add_foreign_key "repository_connections", "applications"
+  add_foreign_key "repository_connections", "projects"
 end

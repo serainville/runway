@@ -49,6 +49,13 @@
             <%= link_to "Projects", projects_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
             <%= link_to "Create project", new_project_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
             <%= link_to "Create application", projects_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+            <% if admin? %>
+              <%= link_to "Admin users", admin_users_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+              <%= link_to "Admin projects", admin_projects_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+              <%= link_to "Admin applications", admin_project_applications_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+              <%= link_to "Admin repositories", admin_repository_connections_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+              <%= link_to "Backend setup", admin_backend_targets_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+            <% end %>
             <%= link_to "My Account", account_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
             <a href="/up" class="block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">Health</a>
           </nav>
@@ -64,7 +71,11 @@
 
               <div class="flex flex-wrap items-center gap-2 text-sm">
                 <button type="button" data-theme-toggle class="rounded-full border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10">Toggle <span data-theme-label>dark</span></button>
-                <%= button_to "Sign out", session_path, method: :delete, class: "rounded-full border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10" %>
+                <%= button_to "Sign out",
+                              session_path,
+                              method: :delete,
+                              form: { class: "inline", data: { turbo: false } },
+                              class: "rounded-full border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10" %>
               </div>
             </div>
           </header>

@@ -11,7 +11,7 @@ class RuntimesCatalogTest < ActiveSupport::TestCase
   end
 
   test "find returns nil for unsupported runtime key" do
-    assert_nil Runtimes::Catalog.find("nodejs-7")
+    assert_nil Runtimes::Catalog.find("elixir-1.17")
   end
 
   test "find returns Go catalog item by key" do

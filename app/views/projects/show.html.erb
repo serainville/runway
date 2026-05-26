@@ -23,6 +23,7 @@
     <div class="px-8 py-6">
       <div class="flex flex-wrap gap-3">
         <%= link_to "Add application", new_project_application_path(@project), class: "rounded-full bg-fuchsia-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-fuchsia-500" %>
+        <%= link_to "Repository connections", project_repository_connections_path(@project), class: "rounded-full border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/10" %>
         <%= link_to "Back to dashboard", dashboard_path, class: "rounded-full border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/10" %>
       </div>
     </div>

@@ -1,0 +1,20 @@
+<section class="space-y-6">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white"><%= @repository_connection.name %></h1>
+      <p class="mt-2 text-slate-600 dark:text-slate-300">Manage details, rotate secret, validate endpoint connectivity, or delete this global repository connection.</p>
+    </div>
+    <%= link_to "Back to connections", admin_repository_connections_path, class: "rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 dark:border-white/10 dark:text-slate-200" %>
+  </div>
+
+  <%= render "repository_connections/details", repository_connection: @repository_connection %>
+  <%= render "repository_connections/form",
+             repository_connection: @repository_connection,
+             form_model: [:admin, @repository_connection],
+             form_url: admin_repository_connection_path(@repository_connection) %>
+  <%= render "repository_connections/troubleshooting" %>
+  <%= render "repository_connections/actions",
+             validate_path: validate_connection_admin_repository_connection_path(@repository_connection),
+             delete_path: admin_repository_connection_path(@repository_connection),
+             delete_label: "Delete connection" %>
+</section>

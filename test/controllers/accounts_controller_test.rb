@@ -10,7 +10,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   test "shows account profile for authenticated user" do
     post session_url, params: {
       session: {
-        email: users(:one).email,
+        username: users(:one).username,
         password: "password123"
       }
     }
@@ -20,5 +20,35 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "My account"
     assert_includes response.body, users(:one).email
+  end
+
+  test "allows authenticated user to change password" do
+    post session_url, params: {
+      session: {
+        username: users(:one).username,
+        password: "password123"
+      }
+    }
+
+    patch account_password_url, params: {
+      account: {
+        current_password: "password123",
+        password: "changed-password-123",
+        password_confirmation: "changed-password-123"
+      }
+    }
+
+    assert_redirected_to account_url
+
+    delete session_url
+
+    post session_url, params: {
+      session: {
+        username: users(:one).username,
+        password: "changed-password-123"
+      }
+    }
+
+    assert_redirected_to dashboard_url
   end
 end

@@ -7,7 +7,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    result = Authentication::SignInUser.call(email: session_params[:email], password: session_params[:password])
+    result = Authentication::SignInUser.call(username: session_params[:username], password: session_params[:password])
 
     if result.success?
       reset_session
@@ -29,6 +29,6 @@ class SessionsController < ApplicationController
   private
 
   def session_params
-    params.require(:session).permit(:email, :password)
+    params.require(:session).permit(:username, :password)
   end
 end

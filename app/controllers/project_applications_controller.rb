@@ -3,6 +3,7 @@ class ProjectApplicationsController < ApplicationController
   before_action :set_project
   before_action :set_application, only: :show
   before_action :set_runtime_options, only: [:new, :create]
+  before_action :set_repository_connections, only: [:new, :create]
 
   def index
     @applications = @project.applications.includes(:repository_connection).order(:name)
@@ -14,6 +15,8 @@ class ProjectApplicationsController < ApplicationController
   def new
     @application = @project.applications.new
     @selected_runtime_key = nil
+    @selected_repository_connection_id = nil
+    @repository_url = nil
   end
 
   def create
@@ -26,6 +29,8 @@ class ProjectApplicationsController < ApplicationController
 
     @application = @project.applications.new(name: application_params[:name], description: application_params[:description])
     @selected_runtime_key = application_params[:runtime_key]
+    @selected_repository_connection_id = application_params[:repository_connection_id]
+    @repository_url = application_params[:repository_url]
     flash.now[:alert] = result.message
     render :new, status: :unprocessable_entity
   end
@@ -47,7 +52,7 @@ class ProjectApplicationsController < ApplicationController
   end
 
   def application_params
-    params.require(:application).permit(:name, :description, :runtime_key, :repository_provider, :repository_url, :default_branch)
+    params.require(:application).permit(:name, :description, :runtime_key, :repository_connection_id, :repository_url)
   end
 
   def service_params
@@ -55,15 +60,16 @@ class ProjectApplicationsController < ApplicationController
       name: application_params[:name],
       description: application_params[:description],
       runtime_key: application_params[:runtime_key],
-      repository: {
-        provider: application_params[:repository_provider],
-        repo_url: application_params[:repository_url],
-        default_branch: application_params[:default_branch]
-      }
+      repository_connection_id: application_params[:repository_connection_id],
+      repository_url: application_params[:repository_url]
     }
   end
 
   def set_runtime_options
     @runtime_options = Runtimes::ListSupportedOptions.call
+  end
+
+  def set_repository_connections
+    @repository_connections = RepositoryConnections::ListAvailableConnections.call(project: @project)
   end
 end

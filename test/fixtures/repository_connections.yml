@@ -1,0 +1,18 @@
+global_gitlab:
+  name: Shared Payments Repo
+  scope: global
+  provider: gitlab
+  endpoint_url: https://gitlab.example.com
+  auth_username: oauth2
+  auth_secret_ciphertext: <%= RepositoryConnections::CredentialCipher.encrypt("shared-token") %>
+  validation_status: pending
+
+project_one_gitlab:
+  name: Tenant Ledger Repo
+  scope: project
+  project: one
+  provider: gitlab
+  endpoint_url: https://gitlab.example.com
+  auth_username: oauth2
+  auth_secret_ciphertext: <%= RepositoryConnections::CredentialCipher.encrypt("project-token") %>
+  validation_status: pending

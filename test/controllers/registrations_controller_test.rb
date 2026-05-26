@@ -15,6 +15,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
           user: {
             name: "New User",
             email: "new.user@example.com",
+            username: "newuser",
             password: "password123",
             password_confirmation: "password123"
           }
@@ -32,6 +33,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
       user: {
         name: "",
         email: "not-an-email",
+        username: "",
         password: "short",
         password_confirmation: "short"
       }

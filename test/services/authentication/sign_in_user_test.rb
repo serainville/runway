@@ -12,7 +12,7 @@ class AuthenticationSignInUserTest < ActiveSupport::TestCase
 
   test "signs in with valid credentials and creates audit event" do
     assert_difference("AuditEvent.count", 1) do
-      result = Authentication::SignInUser.call(email: users(:one).email, password: "password123")
+      result = Authentication::SignInUser.call(username: users(:one).username, password: "password123")
 
       assert result.success?
       assert_equal users(:one), result.user
@@ -20,7 +20,7 @@ class AuthenticationSignInUserTest < ActiveSupport::TestCase
   end
 
   test "rejects invalid credentials" do
-    result = Authentication::SignInUser.call(email: users(:one).email, password: "invalid")
+    result = Authentication::SignInUser.call(username: users(:one).username, password: "invalid")
 
     assert_not result.success?
     assert_equal :invalid_credentials, result.error
@@ -28,7 +28,7 @@ class AuthenticationSignInUserTest < ActiveSupport::TestCase
 
   test "returns provider not supported for unimplemented modes" do
     result = Authentication::SignInUser.call(
-      email: users(:one).email,
+      username: users(:one).username,
       password: "password123",
       provider_mode: "ldap"
     )
