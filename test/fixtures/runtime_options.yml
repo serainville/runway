@@ -1,0 +1,14 @@
+ruby4:
+  name: ruby
+  version: "4"
+  active: true
+
+rails8:
+  name: rails
+  version: "8"
+  active: true
+
+node7_inactive:
+  name: nodejs
+  version: "7"
+  active: false

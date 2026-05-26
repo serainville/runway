@@ -1,0 +1,7 @@
+<main class="container">
+  <h1><%= @environment.name %></h1>
+
+  <p>Application: <%= @application.name %></p>
+  <p>Deployment target: <%= @environment.deployment_target.name %></p>
+  <p>Default: <%= @environment.default? ? "yes" : "no" %></p>
+</main>

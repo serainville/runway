@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="rubyTitle rubyDesc">
+  <title id="rubyTitle">Ruby 4 Runtime</title>
+  <desc id="rubyDesc">Gem-like red runtime icon for Ruby 4.</desc>
+  <defs>
+    <linearGradient id="rubyGrad" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fb7185"/>
+      <stop offset="1" stop-color="#be123c"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 4 8 20l8 32h32l8-32Z" fill="url(#rubyGrad)"/>
+  <path d="M32 4v48M8 20l24 12 24-12" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".35" stroke-width="2.5" fill="none"/>
+  <text x="32" y="39" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="14" font-weight="700" fill="#fff">Rb</text>
+</svg>

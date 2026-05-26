@@ -1,5 +1,5 @@
 class AuditEvent < ApplicationRecord
-  belongs_to :team
+  belongs_to :team, optional: true
   belongs_to :actor, class_name: "User", inverse_of: :audit_events
   belongs_to :auditable, polymorphic: true, optional: true
 

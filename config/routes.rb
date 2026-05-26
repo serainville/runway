@@ -1,5 +1,15 @@
 Rails.application.routes.draw do
   resources :applications, only: [:index, :create]
+  resource :registration, only: [:new, :create]
+  resource :session, only: [:new, :create, :destroy]
+  resource :dashboard, only: [:show], controller: :dashboard
+  resource :account, only: [:show]
+  resources :projects, only: [:index, :show, :new, :create] do
+    resources :applications, only: [:index, :show, :new, :create], controller: :project_applications do
+      resources :environments, only: [:show], controller: :application_environments
+    end
+  end
+
   get "home", to: "home#index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

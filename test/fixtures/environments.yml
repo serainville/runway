@@ -2,10 +2,12 @@
 
 one:
   application: one
+  deployment_target: one
   name: development
   default: true
 
 two:
   application: two
+  deployment_target: one
   name: staging
   default: false

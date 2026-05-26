@@ -17,19 +17,128 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <script>
+      (() => {
+        const savedTheme = localStorage.getItem("runway-theme")
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+        const useDark = savedTheme ? savedTheme === "dark" : prefersDark
+        document.documentElement.classList.toggle("dark", useDark)
+      })()
+    </script>
+
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <header>
-      <nav>
-        <a href="/">Runway</a>
-        <a href="/up">Health</a>
-      </nav>
-    </header>
+  <body class="min-h-screen bg-slate-100 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
+    <div class="pointer-events-none fixed inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_top_left,_rgba(147,51,234,0.20),_transparent_45%),radial-gradient(circle_at_top_right,_rgba(37,99,235,0.18),_transparent_40%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(168,85,247,0.28),_transparent_45%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.2),_transparent_40%)]"></div>
 
-    <%= yield %>
+    <% if authenticated? %>
+      <div class="min-h-screen lg:grid lg:grid-cols-[17rem_1fr]">
+        <aside class="border-r border-slate-200/80 bg-white/80 px-4 py-5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80">
+          <div class="flex items-center gap-3 px-2">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-blue-600 text-white shadow-lg shadow-fuchsia-500/20">↗</span>
+            <div>
+              <p class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Runway</p>
+              <p class="text-xs uppercase tracking-[0.2em] text-fuchsia-600 dark:text-fuchsia-300">Operational</p>
+            </div>
+          </div>
+
+          <nav class="mt-8 space-y-1 text-sm">
+            <%= link_to "Dashboard", dashboard_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+            <%= link_to "Projects", projects_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+            <%= link_to "Create project", new_project_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+            <%= link_to "Create application", projects_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+            <%= link_to "My Account", account_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+            <a href="/up" class="block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">Health</a>
+          </nav>
+        </aside>
+
+        <div class="min-w-0">
+          <header class="border-b border-slate-200/80 bg-white/80 px-4 py-4 backdrop-blur dark:border-white/10 dark:bg-slate-950/75 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex min-w-[16rem] flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500 shadow-sm dark:border-white/10 dark:bg-slate-900/70 dark:text-slate-400">
+                <span>⌕</span>
+                <span>Jump to projects, apps, releases...</span>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2 text-sm">
+                <button type="button" data-theme-toggle class="rounded-full border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10">Toggle <span data-theme-label>dark</span></button>
+                <%= button_to "Sign out", session_path, method: :delete, class: "rounded-full border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10" %>
+              </div>
+            </div>
+          </header>
+
+          <% if flash[:notice] %>
+            <div class="mx-auto mt-4 max-w-7xl px-4 sm:px-6 lg:px-8">
+              <p class="rounded-2xl border border-emerald-300 bg-emerald-100 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-500/10 dark:text-emerald-200"><%= flash[:notice] %></p>
+            </div>
+          <% end %>
+
+          <% if flash[:alert] %>
+            <div class="mx-auto mt-4 max-w-7xl px-4 sm:px-6 lg:px-8">
+              <p class="rounded-2xl border border-rose-300 bg-rose-100 px-4 py-3 text-sm text-rose-700 dark:border-rose-400/20 dark:bg-rose-500/10 dark:text-rose-200"><%= flash[:alert] %></p>
+            </div>
+          <% end %>
+
+          <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <%= yield %>
+          </main>
+        </div>
+      </div>
+    <% else %>
+      <header class="border-b border-slate-200/80 bg-white/80 backdrop-blur dark:border-white/10 dark:bg-slate-950/80">
+        <nav class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+          <a href="/" class="flex items-center gap-3 text-sm font-semibold tracking-wide text-slate-900 dark:text-white">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-blue-600 text-white shadow-lg shadow-fuchsia-500/20">↗</span>
+            <span>Runway</span>
+          </a>
+
+          <div class="flex flex-wrap items-center justify-end gap-2 text-sm">
+            <button type="button" data-theme-toggle class="rounded-full border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10">Toggle <span data-theme-label>dark</span></button>
+            <%= link_to "Create account", new_registration_path, class: "rounded-full bg-fuchsia-500 px-4 py-2 font-medium text-white shadow-lg shadow-fuchsia-500/20 transition hover:bg-fuchsia-400" %>
+            <%= link_to "Sign in", new_session_path, class: "rounded-full border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10" %>
+          </div>
+        </nav>
+      </header>
+
+      <% if flash[:notice] %>
+        <div class="mx-auto mt-4 max-w-7xl px-4 sm:px-6 lg:px-8">
+          <p class="rounded-2xl border border-emerald-300 bg-emerald-100 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-500/10 dark:text-emerald-200"><%= flash[:notice] %></p>
+        </div>
+      <% end %>
+
+      <% if flash[:alert] %>
+        <div class="mx-auto mt-4 max-w-7xl px-4 sm:px-6 lg:px-8">
+          <p class="rounded-2xl border border-rose-300 bg-rose-100 px-4 py-3 text-sm text-rose-700 dark:border-rose-400/20 dark:bg-rose-500/10 dark:text-rose-200"><%= flash[:alert] %></p>
+        </div>
+      <% end %>
+
+      <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <%= yield %>
+      </main>
+    <% end %>
+
+    <script>
+      (() => {
+        const labels = document.querySelectorAll("[data-theme-label]")
+        const setTheme = (theme) => {
+          const useDark = theme === "dark"
+          document.documentElement.classList.toggle("dark", useDark)
+          labels.forEach((label) => { label.textContent = useDark ? "light" : "dark" })
+        }
+
+        const currentDark = document.documentElement.classList.contains("dark")
+        setTheme(currentDark ? "dark" : "light")
+
+        document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const nextTheme = document.documentElement.classList.contains("dark") ? "light" : "dark"
+            localStorage.setItem("runway-theme", nextTheme)
+            setTheme(nextTheme)
+          })
+        })
+      })()
+    </script>
   </body>
 </html>

@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: Tenant Project
+  slug: tenant-project
+  description: Project for tenant operations
+
+two:
+  name: Platform Project
+  slug: platform-project
+  description: Project for platform work

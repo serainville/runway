@@ -71,19 +71,20 @@ Do not begin implementation until the plan is clear.
 Follow these rules:
 
 1. Keep controllers thin.
-2. Put business workflows in service objects.
-3. Use explicit lifecycle statuses where relevant.
-4. Add model validations.
-5. Add database constraints where appropriate.
-6. Use clear Rails naming conventions.
-7. Keep user-facing language app-centric.
-8. Do not expose Kubernetes primitives in normal user-facing UX.
-9. Do not call Kubernetes, Vault, GitLab, Nexus, or Istio directly from controllers.
-10. All external integrations must go through adapter/service classes.
-11. Every mutation should be authorized.
-12. Every meaningful mutation should create an AuditEvent.
-13. Deployment-related changes should create DeploymentEvents where relevant.
-14. Every feature must include tests for success and failure paths.
+2. Use Test-Driven Development (TDD) practices. Write tests before implementation and ensure they fail before writing code to pass them.
+3. Put business workflows in service objects.
+4. Use explicit lifecycle statuses where relevant.
+5. Add model validations.
+6. Add database constraints where appropriate.
+7. Use clear Rails naming conventions.
+8. Keep user-facing language app-centric.
+9. Do not expose Kubernetes primitives in normal user-facing UX.
+10. Do not call Kubernetes, Vault, GitLab, Nexus, or Istio directly from controllers.
+11. All external integrations must go through adapter/service classes.
+12. Every mutation should be authorized.
+13. Every meaningful mutation should create an AuditEvent.
+14. Deployment-related changes should create DeploymentEvents where relevant.
+15. Every feature must include tests for success and failure paths.
 
 ---
 

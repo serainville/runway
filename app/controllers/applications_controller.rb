@@ -1,5 +1,5 @@
 class ApplicationsController < ApplicationController
-  before_action :require_current_user!
+  before_action :require_current_user_json!
 
   def index
     applications = current_user.teams.includes(:applications).flat_map(&:applications)

@@ -3,7 +3,13 @@ module Environments
     DEFAULT_ENVIRONMENT_NAME = "development".freeze
 
     def self.call(application:)
-      application.environments.create!(name: DEFAULT_ENVIRONMENT_NAME, default: true)
+      deployment_target = DeploymentTargets::SeedDefault.call
+
+      application.environments.create!(
+        name: DEFAULT_ENVIRONMENT_NAME,
+        default: true,
+        deployment_target: deployment_target
+      )
     end
   end
 end
