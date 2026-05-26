@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="ApplicationsControllerTest" filepath="test/controllers/applications_controller_test.rb" skipped="0" failures="0" errors="0" tests="5" assertions="21" time="0.12114299990935251">
+    <testcase name="test_lists_only_applications_from_teams_user_belongs_to" lineno="46" classname="ApplicationsControllerTest" assertions="5" time="0.10161999997217208" file="test/controllers/applications_controller_test.rb">
+    </testcase>
+    <testcase name="test_returns_unauthorized_when_user_header_is_missing" lineno="4" classname="ApplicationsControllerTest" assertions="1" time="0.004428999964147806" file="test/controllers/applications_controller_test.rb">
+    </testcase>
+    <testcase name="test_returns_validation_errors" lineno="37" classname="ApplicationsControllerTest" assertions="3" time="0.004069999966304749" file="test/controllers/applications_controller_test.rb">
+    </testcase>
+    <testcase name="test_creates_application_with_default_environment_and_audit_event" lineno="10" classname="ApplicationsControllerTest" assertions="10" time="0.009444999974220991" file="test/controllers/applications_controller_test.rb">
+    </testcase>
+    <testcase name="test_rejects_create_when_user_is_not_a_member_of_team" lineno="28" classname="ApplicationsControllerTest" assertions="2" time="0.0015790000325068831" file="test/controllers/applications_controller_test.rb">
+    </testcase>
+  </testsuite>
+</testsuites>

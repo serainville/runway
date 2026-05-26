@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  application: one
+  name: development
+  default: true
+
+two:
+  application: two
+  name: staging
+  default: false

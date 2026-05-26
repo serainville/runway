@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="MembershipTest" filepath="test/models/membership_test.rb" skipped="0" failures="0" errors="0" tests="2" assertions="6" time="0.031094000034499913">
+    <testcase name="test_enforces_unique_user_and_team_pair" lineno="11" classname="MembershipTest" assertions="3" time="0.030091000022366643" file="test/models/membership_test.rb">
+    </testcase>
+    <testcase name="test_requires_valid_role" lineno="4" classname="MembershipTest" assertions="3" time="0.0010030000121332705" file="test/models/membership_test.rb">
+    </testcase>
+  </testsuite>
+</testsuites>

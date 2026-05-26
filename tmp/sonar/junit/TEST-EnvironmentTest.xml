@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="EnvironmentTest" filepath="test/models/environment_test.rb" skipped="0" failures="0" errors="0" tests="2" assertions="6" time="0.0014979999396018684">
+    <testcase name="test_requires_default_to_be_boolean" lineno="11" classname="EnvironmentTest" assertions="3" time="0.0007829999667592347" file="test/models/environment_test.rb">
+    </testcase>
+    <testcase name="test_requires_name" lineno="4" classname="EnvironmentTest" assertions="3" time="0.0007149999728426337" file="test/models/environment_test.rb">
+    </testcase>
+  </testsuite>
+</testsuites>

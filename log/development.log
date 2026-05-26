@@ -1,0 +1,666 @@
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY) /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-05-26 14:04:25.456942', '2026-05-26 14:04:25.456943') RETURNING "key" /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateUsers (20260526134911)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "email" varchar NOT NULL, "name" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134911') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateTeams (20260526134912)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "teams" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_name" ON "teams" ("name") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134912') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateMemberships (20260526134913)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "team_id" integer NOT NULL, "role" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_99326fb65d"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_ae2aedcfaf"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_user_id" ON "memberships" ("user_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_team_id" ON "memberships" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_memberships_on_user_id_and_team_id" ON "memberships" ("user_id", "team_id") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134913') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateApplications (20260526134914)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "applications" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "name" varchar NOT NULL, "slug" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_63a8f23bf3"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_applications_on_team_id" ON "applications" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_applications_on_team_id_and_name" ON "applications" ("team_id", "name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_applications_on_team_id_and_slug" ON "applications" ("team_id", "slug") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134914') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateEnvironments (20260526134915)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "environments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "application_id" integer NOT NULL, "name" varchar NOT NULL, "default" boolean DEFAULT 0 NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_8c2f0b0160"
+FOREIGN KEY ("application_id")
+  REFERENCES "applications" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_environments_on_application_id" ON "environments" ("application_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_environments_on_application_id_and_name" ON "environments" ("application_id", "name") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134915') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateDeploymentTargets (20260526134916)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE TABLE "deployment_targets" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "description" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_deployment_targets_on_name" ON "deployment_targets" ("name") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134916') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateAuditEvents (20260526134917)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "audit_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "actor_id" integer NOT NULL, "action" varchar NOT NULL, "auditable_type" varchar, "auditable_id" integer, "metadata" json DEFAULT '{}' NOT NULL, "occurred_at" datetime(6) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_2dd55ed554"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+, CONSTRAINT "fk_rails_dd1f3a471a"
+FOREIGN KEY ("actor_id")
+  REFERENCES "users" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_team_id" ON "audit_events" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_actor_id" ON "audit_events" ("actor_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_auditable" ON "audit_events" ("auditable_type", "auditable_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_occurred_at" ON "audit_events" ("occurred_at") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134917') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY) /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-26 14:04:25.492404', '2026-05-26 14:04:25.492405') RETURNING "key" /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateUsers (20260526134911)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "email" varchar NOT NULL, "name" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134911') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateTeams (20260526134912)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "teams" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_name" ON "teams" ("name") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134912') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateMemberships (20260526134913)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "team_id" integer NOT NULL, "role" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_99326fb65d"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_ae2aedcfaf"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_user_id" ON "memberships" ("user_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_team_id" ON "memberships" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_memberships_on_user_id_and_team_id" ON "memberships" ("user_id", "team_id") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134913') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateApplications (20260526134914)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "applications" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "name" varchar NOT NULL, "slug" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_63a8f23bf3"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_applications_on_team_id" ON "applications" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_applications_on_team_id_and_name" ON "applications" ("team_id", "name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_applications_on_team_id_and_slug" ON "applications" ("team_id", "slug") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134914') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateEnvironments (20260526134915)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "environments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "application_id" integer NOT NULL, "name" varchar NOT NULL, "default" boolean DEFAULT 0 NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_8c2f0b0160"
+FOREIGN KEY ("application_id")
+  REFERENCES "applications" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_environments_on_application_id" ON "environments" ("application_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_environments_on_application_id_and_name" ON "environments" ("application_id", "name") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134915') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateDeploymentTargets (20260526134916)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "deployment_targets" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "description" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_deployment_targets_on_name" ON "deployment_targets" ("name") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134916') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Migrating to CreateAuditEvents (20260526134917)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "audit_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "actor_id" integer NOT NULL, "action" varchar NOT NULL, "auditable_type" varchar, "auditable_id" integer, "metadata" json DEFAULT '{}' NOT NULL, "occurred_at" datetime(6) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_2dd55ed554"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+, CONSTRAINT "fk_rails_dd1f3a471a"
+FOREIGN KEY ("actor_id")
+  REFERENCES "users" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_team_id" ON "audit_events" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_actor_id" ON "audit_events" ("actor_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_auditable" ON "audit_events" ("auditable_type", "auditable_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_occurred_at" ON "audit_events" ("occurred_at") /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260526134917') RETURNING "version" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+  [1m[36mDeploymentTarget Load (0.0ms)[0m  [1m[34mSELECT "deployment_targets".* FROM "deployment_targets" WHERE "deployment_targets"."name" = 'tenant-nonp' LIMIT 1 /*application='Runway'*/[0m
+  ↳ app/services/deployment_targets/seed_default.rb:6:in `call'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  ↳ app/services/deployment_targets/seed_default.rb:6:in `call'
+  [1m[36mDeploymentTarget Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "deployment_targets" WHERE "deployment_targets"."name" = 'tenant-nonp' LIMIT 1 /*application='Runway'*/[0m
+  ↳ app/services/deployment_targets/seed_default.rb:6:in `call'
+  [1m[36mDeploymentTarget Create (0.0ms)[0m  [1m[32mINSERT INTO "deployment_targets" ("name", "description", "created_at", "updated_at") VALUES ('tenant-nonp', NULL, '2026-05-26 14:04:25.578558', '2026-05-26 14:04:25.578558') RETURNING "id" /*application='Runway'*/[0m
+  ↳ app/services/deployment_targets/seed_default.rb:6:in `call'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  ↳ app/services/deployment_targets/seed_default.rb:6:in `call'
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Started GET "/" for 127.0.0.1 at 2026-05-26 11:53:45 -0400
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Processing by ApplicationsController#index as HTML
+  [1m[36mUser Load (0.0ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT 1 /*action='index',application='Runway',controller='applications'*/[0m
+  ↳ app/controllers/application_controller.rb:12:in `current_user'
+Filter chain halted as :require_current_user! rendered or redirected
+Completed 401 Unauthorized in 28ms (Views: 0.1ms | ActiveRecord: 1.0ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-05-26 11:53:45 -0400
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "applications" /*application='Runway'*/[0m
+  [1m[35m (0.8ms)[0m  [1m[35mCREATE TABLE "applications" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "name" varchar NOT NULL, "slug" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_applications_on_team_id_and_name" ON "applications" ("team_id", "name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_applications_on_team_id_and_slug" ON "applications" ("team_id", "slug") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_applications_on_team_id" ON "applications" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "audit_events" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "audit_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "actor_id" integer NOT NULL, "action" varchar NOT NULL, "auditable_type" varchar, "auditable_id" integer, "metadata" json DEFAULT '{}' NOT NULL, "occurred_at" datetime(6) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_actor_id" ON "audit_events" ("actor_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_auditable" ON "audit_events" ("auditable_type", "auditable_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_occurred_at" ON "audit_events" ("occurred_at") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_team_id" ON "audit_events" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "deployment_targets" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "deployment_targets" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "description" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_deployment_targets_on_name" ON "deployment_targets" ("name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "environments" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "environments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "application_id" integer NOT NULL, "name" varchar NOT NULL, "default" boolean DEFAULT 0 NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_environments_on_application_id_and_name" ON "environments" ("application_id", "name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_environments_on_application_id" ON "environments" ("application_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "memberships" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "team_id" integer NOT NULL, "role" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_team_id" ON "memberships" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_memberships_on_user_id_and_team_id" ON "memberships" ("user_id", "team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_user_id" ON "memberships" ("user_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "teams" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "teams" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_name" ON "teams" ("name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "users" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "email" varchar NOT NULL, "name" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aapplications" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "name" varchar NOT NULL, "slug" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aapplications_on_team_id" ON "aapplications" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aapplications_on_team_id_and_slug" ON "aapplications" ("team_id", "slug") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aapplications_on_team_id_and_name" ON "aapplications" ("team_id", "name") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aapplications" ("id","team_id","name","slug","created_at","updated_at")
+                     SELECT "id","team_id","name","slug","created_at","updated_at" FROM "applications" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "applications" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "applications" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "name" varchar NOT NULL, "slug" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_63a8f23bf3"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_applications_on_team_id_and_name" ON "applications" ("team_id", "name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_applications_on_team_id_and_slug" ON "applications" ("team_id", "slug") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_applications_on_team_id" ON "applications" ("team_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "applications" ("id","team_id","name","slug","created_at","updated_at")
+                     SELECT "id","team_id","name","slug","created_at","updated_at" FROM "aapplications" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "aapplications" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aaudit_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "actor_id" integer NOT NULL, "action" varchar NOT NULL, "auditable_type" varchar, "auditable_id" integer, "metadata" json DEFAULT '{}' NOT NULL, "occurred_at" datetime(6) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_team_id" ON "aaudit_events" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_occurred_at" ON "aaudit_events" ("occurred_at") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_auditable" ON "aaudit_events" ("auditable_type", "auditable_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_actor_id" ON "aaudit_events" ("actor_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aaudit_events" ("id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at")
+                     SELECT "id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at" FROM "audit_events" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "audit_events" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "audit_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "actor_id" integer NOT NULL, "action" varchar NOT NULL, "auditable_type" varchar, "auditable_id" integer, "metadata" json DEFAULT '{}' NOT NULL, "occurred_at" datetime(6) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_2dd55ed554"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_actor_id" ON "audit_events" ("actor_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_auditable" ON "audit_events" ("auditable_type", "auditable_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_occurred_at" ON "audit_events" ("occurred_at") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_team_id" ON "audit_events" ("team_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "audit_events" ("id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at")
+                     SELECT "id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at" FROM "aaudit_events" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "aaudit_events" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aaudit_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "actor_id" integer NOT NULL, "action" varchar NOT NULL, "auditable_type" varchar, "auditable_id" integer, "metadata" json DEFAULT '{}' NOT NULL, "occurred_at" datetime(6) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_team_id" ON "aaudit_events" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_occurred_at" ON "aaudit_events" ("occurred_at") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_auditable" ON "aaudit_events" ("auditable_type", "auditable_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_actor_id" ON "aaudit_events" ("actor_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aaudit_events" ("id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at")
+                     SELECT "id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at" FROM "audit_events" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "audit_events" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "audit_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "actor_id" integer NOT NULL, "action" varchar NOT NULL, "auditable_type" varchar, "auditable_id" integer, "metadata" json DEFAULT '{}' NOT NULL, "occurred_at" datetime(6) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_2dd55ed554"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+, CONSTRAINT "fk_rails_dd1f3a471a"
+FOREIGN KEY ("actor_id")
+  REFERENCES "users" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_actor_id" ON "audit_events" ("actor_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_auditable" ON "audit_events" ("auditable_type", "auditable_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_occurred_at" ON "audit_events" ("occurred_at") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_team_id" ON "audit_events" ("team_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "audit_events" ("id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at")
+                     SELECT "id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at" FROM "aaudit_events" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "aaudit_events" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aenvironments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "application_id" integer NOT NULL, "name" varchar NOT NULL, "default" boolean DEFAULT 0 NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aenvironments_on_application_id" ON "aenvironments" ("application_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aenvironments_on_application_id_and_name" ON "aenvironments" ("application_id", "name") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aenvironments" ("id","application_id","name","default","created_at","updated_at")
+                     SELECT "id","application_id","name","default","created_at","updated_at" FROM "environments" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "environments" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "environments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "application_id" integer NOT NULL, "name" varchar NOT NULL, "default" boolean DEFAULT 0 NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_8c2f0b0160"
+FOREIGN KEY ("application_id")
+  REFERENCES "applications" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_environments_on_application_id_and_name" ON "environments" ("application_id", "name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_environments_on_application_id" ON "environments" ("application_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "environments" ("id","application_id","name","default","created_at","updated_at")
+                     SELECT "id","application_id","name","default","created_at","updated_at" FROM "aenvironments" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "aenvironments" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "amemberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "team_id" integer NOT NULL, "role" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amemberships_on_user_id" ON "amemberships" ("user_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_amemberships_on_user_id_and_team_id" ON "amemberships" ("user_id", "team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amemberships_on_team_id" ON "amemberships" ("team_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "amemberships" ("id","user_id","team_id","role","created_at","updated_at")
+                     SELECT "id","user_id","team_id","role","created_at","updated_at" FROM "memberships" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "memberships" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "team_id" integer NOT NULL, "role" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_ae2aedcfaf"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_team_id" ON "memberships" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_memberships_on_user_id_and_team_id" ON "memberships" ("user_id", "team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_user_id" ON "memberships" ("user_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "memberships" ("id","user_id","team_id","role","created_at","updated_at")
+                     SELECT "id","user_id","team_id","role","created_at","updated_at" FROM "amemberships" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "amemberships" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "amemberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "team_id" integer NOT NULL, "role" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amemberships_on_user_id" ON "amemberships" ("user_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_amemberships_on_user_id_and_team_id" ON "amemberships" ("user_id", "team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amemberships_on_team_id" ON "amemberships" ("team_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "amemberships" ("id","user_id","team_id","role","created_at","updated_at")
+                     SELECT "id","user_id","team_id","role","created_at","updated_at" FROM "memberships" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "memberships" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "team_id" integer NOT NULL, "role" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_ae2aedcfaf"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+, CONSTRAINT "fk_rails_99326fb65d"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_team_id" ON "memberships" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_memberships_on_user_id_and_team_id" ON "memberships" ("user_id", "team_id") /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_user_id" ON "memberships" ("user_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "memberships" ("id","user_id","team_id","role","created_at","updated_at")
+                     SELECT "id","user_id","team_id","role","created_at","updated_at" FROM "amemberships" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "amemberships" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY) /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20260526134917) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20260526134916),
+(20260526134915),
+(20260526134914),
+(20260526134913),
+(20260526134912),
+(20260526134911); /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-05-26 15:57:27.945476', '2026-05-26 15:57:27.945476') RETURNING "key" /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Update (0.0ms)[0m  [1m[33mUPDATE "ar_internal_metadata" SET "value" = 'test', "updated_at" = '2026-05-26 15:57:27.946172' WHERE "ar_internal_metadata"."key" = 'environment' /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'schema_sha1' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.0ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '0f5e724888e258f5486d20ea987b0af1d344e214', '2026-05-26 15:57:27.946736', '2026-05-26 15:57:27.946737') RETURNING "key" /*application='Runway'*/[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "applications" /*application='Runway'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "applications" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "name" varchar NOT NULL, "slug" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_applications_on_team_id_and_name" ON "applications" ("team_id", "name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_applications_on_team_id_and_slug" ON "applications" ("team_id", "slug") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_applications_on_team_id" ON "applications" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "audit_events" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "audit_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "actor_id" integer NOT NULL, "action" varchar NOT NULL, "auditable_type" varchar, "auditable_id" integer, "metadata" json DEFAULT '{}' NOT NULL, "occurred_at" datetime(6) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_actor_id" ON "audit_events" ("actor_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_auditable" ON "audit_events" ("auditable_type", "auditable_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_occurred_at" ON "audit_events" ("occurred_at") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_team_id" ON "audit_events" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "deployment_targets" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "deployment_targets" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "description" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_deployment_targets_on_name" ON "deployment_targets" ("name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "environments" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "environments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "application_id" integer NOT NULL, "name" varchar NOT NULL, "default" boolean DEFAULT FALSE NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_environments_on_application_id_and_name" ON "environments" ("application_id", "name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_environments_on_application_id" ON "environments" ("application_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "memberships" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "team_id" integer NOT NULL, "role" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_team_id" ON "memberships" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_memberships_on_user_id_and_team_id" ON "memberships" ("user_id", "team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_user_id" ON "memberships" ("user_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "teams" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "teams" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_name" ON "teams" ("name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "users" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "email" varchar NOT NULL, "name" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aapplications" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "name" varchar NOT NULL, "slug" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aapplications_on_team_id" ON "aapplications" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aapplications_on_team_id_and_slug" ON "aapplications" ("team_id", "slug") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aapplications_on_team_id_and_name" ON "aapplications" ("team_id", "name") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aapplications" ("id","team_id","name","slug","created_at","updated_at")
+                     SELECT "id","team_id","name","slug","created_at","updated_at" FROM "applications" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "applications" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "applications" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "name" varchar NOT NULL, "slug" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_63a8f23bf3"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_applications_on_team_id_and_name" ON "applications" ("team_id", "name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_applications_on_team_id_and_slug" ON "applications" ("team_id", "slug") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_applications_on_team_id" ON "applications" ("team_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "applications" ("id","team_id","name","slug","created_at","updated_at")
+                     SELECT "id","team_id","name","slug","created_at","updated_at" FROM "aapplications" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "aapplications" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aaudit_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "actor_id" integer NOT NULL, "action" varchar NOT NULL, "auditable_type" varchar, "auditable_id" integer, "metadata" json DEFAULT '{}' NOT NULL, "occurred_at" datetime(6) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_team_id" ON "aaudit_events" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_occurred_at" ON "aaudit_events" ("occurred_at") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_auditable" ON "aaudit_events" ("auditable_type", "auditable_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_actor_id" ON "aaudit_events" ("actor_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aaudit_events" ("id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at")
+                     SELECT "id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at" FROM "audit_events" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "audit_events" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "audit_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "actor_id" integer NOT NULL, "action" varchar NOT NULL, "auditable_type" varchar, "auditable_id" integer, "metadata" json DEFAULT '{}' NOT NULL, "occurred_at" datetime(6) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_2dd55ed554"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_actor_id" ON "audit_events" ("actor_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_auditable" ON "audit_events" ("auditable_type", "auditable_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_occurred_at" ON "audit_events" ("occurred_at") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_team_id" ON "audit_events" ("team_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "audit_events" ("id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at")
+                     SELECT "id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at" FROM "aaudit_events" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "aaudit_events" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aaudit_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "actor_id" integer NOT NULL, "action" varchar NOT NULL, "auditable_type" varchar, "auditable_id" integer, "metadata" json DEFAULT '{}' NOT NULL, "occurred_at" datetime(6) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_team_id" ON "aaudit_events" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_occurred_at" ON "aaudit_events" ("occurred_at") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_auditable" ON "aaudit_events" ("auditable_type", "auditable_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aaudit_events_on_actor_id" ON "aaudit_events" ("actor_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aaudit_events" ("id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at")
+                     SELECT "id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at" FROM "audit_events" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "audit_events" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "audit_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "actor_id" integer NOT NULL, "action" varchar NOT NULL, "auditable_type" varchar, "auditable_id" integer, "metadata" json DEFAULT '{}' NOT NULL, "occurred_at" datetime(6) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_2dd55ed554"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+, CONSTRAINT "fk_rails_dd1f3a471a"
+FOREIGN KEY ("actor_id")
+  REFERENCES "users" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_actor_id" ON "audit_events" ("actor_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_auditable" ON "audit_events" ("auditable_type", "auditable_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_occurred_at" ON "audit_events" ("occurred_at") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_team_id" ON "audit_events" ("team_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "audit_events" ("id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at")
+                     SELECT "id","team_id","actor_id","action","auditable_type","auditable_id","metadata","occurred_at","created_at","updated_at" FROM "aaudit_events" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "aaudit_events" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aenvironments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "application_id" integer NOT NULL, "name" varchar NOT NULL, "default" boolean DEFAULT FALSE NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aenvironments_on_application_id" ON "aenvironments" ("application_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aenvironments_on_application_id_and_name" ON "aenvironments" ("application_id", "name") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aenvironments" ("id","application_id","name","default","created_at","updated_at")
+                     SELECT "id","application_id","name","default","created_at","updated_at" FROM "environments" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "environments" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "environments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "application_id" integer NOT NULL, "name" varchar NOT NULL, "default" boolean DEFAULT FALSE NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_8c2f0b0160"
+FOREIGN KEY ("application_id")
+  REFERENCES "applications" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_environments_on_application_id_and_name" ON "environments" ("application_id", "name") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_environments_on_application_id" ON "environments" ("application_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "environments" ("id","application_id","name","default","created_at","updated_at")
+                     SELECT "id","application_id","name","default","created_at","updated_at" FROM "aenvironments" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "aenvironments" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "amemberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "team_id" integer NOT NULL, "role" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amemberships_on_user_id" ON "amemberships" ("user_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_amemberships_on_user_id_and_team_id" ON "amemberships" ("user_id", "team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amemberships_on_team_id" ON "amemberships" ("team_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "amemberships" ("id","user_id","team_id","role","created_at","updated_at")
+                     SELECT "id","user_id","team_id","role","created_at","updated_at" FROM "memberships" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "memberships" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "team_id" integer NOT NULL, "role" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_ae2aedcfaf"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_team_id" ON "memberships" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_memberships_on_user_id_and_team_id" ON "memberships" ("user_id", "team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_user_id" ON "memberships" ("user_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "memberships" ("id","user_id","team_id","role","created_at","updated_at")
+                     SELECT "id","user_id","team_id","role","created_at","updated_at" FROM "amemberships" /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "amemberships" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "amemberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "team_id" integer NOT NULL, "role" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amemberships_on_user_id" ON "amemberships" ("user_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_amemberships_on_user_id_and_team_id" ON "amemberships" ("user_id", "team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amemberships_on_team_id" ON "amemberships" ("team_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "amemberships" ("id","user_id","team_id","role","created_at","updated_at")
+                     SELECT "id","user_id","team_id","role","created_at","updated_at" FROM "memberships" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "memberships" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "team_id" integer NOT NULL, "role" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_ae2aedcfaf"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+, CONSTRAINT "fk_rails_99326fb65d"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_team_id" ON "memberships" ("team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_memberships_on_user_id_and_team_id" ON "memberships" ("user_id", "team_id") /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_memberships_on_user_id" ON "memberships" ("user_id") /*application='Runway'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "memberships" ("id","user_id","team_id","role","created_at","updated_at")
+                     SELECT "id","user_id","team_id","role","created_at","updated_at" FROM "amemberships" /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "amemberships" /*application='Runway'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY) /*application='Runway'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20260526134917) /*application='Runway'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20260526134916),
+(20260526134915),
+(20260526134914),
+(20260526134913),
+(20260526134912),
+(20260526134911); /*application='Runway'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.0ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-05-26 16:12:19.891834', '2026-05-26 16:12:19.891835') RETURNING "key" /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Update (0.0ms)[0m  [1m[33mUPDATE "ar_internal_metadata" SET "value" = 'test', "updated_at" = '2026-05-26 16:12:19.892456' WHERE "ar_internal_metadata"."key" = 'environment' /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'schema_sha1' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Runway'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.0ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '0f5e724888e258f5486d20ea987b0af1d344e214', '2026-05-26 16:12:19.892994', '2026-05-26 16:12:19.892994') RETURNING "key" /*application='Runway'*/[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+Started GET "/" for 127.0.0.1 at 2026-05-26 12:12:45 -0400
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Runway'*/[0m
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.0ms | GC: 0.0ms)
+Completed 200 OK in 10ms (Views: 5.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/up" for 127.0.0.1 at 2026-05-26 12:12:52 -0400
+Processing by Rails::HealthController#show as HTML
+  Rendering html template
+  Rendered html template (Duration: 0.0ms | GC: 0.0ms)
+Completed 200 OK in 2ms (Views: 1.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/up" for 127.0.0.1 at 2026-05-26 12:12:52 -0400
+Processing by Rails::HealthController#show as HTML
+  Rendering html template
+  Rendered html template (Duration: 0.0ms | GC: 0.0ms)
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/up" for 127.0.0.1 at 2026-05-26 12:13:04 -0400
+Processing by Rails::HealthController#show as HTML
+  Rendering html template
+  Rendered html template (Duration: 0.0ms | GC: 0.0ms)
+Completed 200 OK in 2ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-05-26 12:13:04 -0400
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started GET "/" for 127.0.0.1 at 2026-05-26 12:13:09 -0400
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.2ms | GC: 0.0ms)
+Completed 200 OK in 3ms (Views: 1.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+

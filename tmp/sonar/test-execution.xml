@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testExecutions version='1'>
+  <file path='test/models/application_test.rb'>
+    <testCase name='test_generates_slug_from_name' duration='1'/>
+    <testCase name='test_allows_same_name_on_different_teams' duration='1'/>
+    <testCase name='test_requires_unique_name_per_team' duration='1'/>
+    <testCase name='test_requires_unique_name_per_team' duration='1'/>
+    <testCase name='test_allows_same_name_on_different_teams' duration='1'/>
+    <testCase name='test_generates_slug_from_name' duration='1'/>
+  </file>
+  <file path='test/controllers/applications_controller_test.rb'>
+    <testCase name='test_lists_only_applications_from_teams_user_belongs_to' duration='102'/>
+    <testCase name='test_returns_unauthorized_when_user_header_is_missing' duration='4'/>
+    <testCase name='test_returns_validation_errors' duration='4'/>
+    <testCase name='test_creates_application_with_default_environment_and_audit_event' duration='9'/>
+    <testCase name='test_rejects_create_when_user_is_not_a_member_of_team' duration='2'/>
+    <testCase name='test_creates_application_with_default_environment_and_audit_event' duration='77'/>
+    <testCase name='test_returns_validation_errors' duration='14'/>
+    <testCase name='test_returns_unauthorized_when_user_header_is_missing' duration='1'/>
+    <testCase name='test_rejects_create_when_user_is_not_a_member_of_team' duration='3'/>
+    <testCase name='test_lists_only_applications_from_teams_user_belongs_to' duration='8'/>
+  </file>
+  <file path='test/services/applications/create_test.rb'>
+    <testCase name='test_returns_forbidden_when_actor_is_not_a_team_member' duration='1'/>
+    <testCase name='test_creates_application,_default_environment,_and_audit_event' duration='3'/>
+    <testCase name='test_returns_validation_error_and_does_not_create_side_effects' duration='2'/>
+    <testCase name='test_returns_validation_error_and_does_not_create_side_effects' duration='5'/>
+    <testCase name='test_creates_application,_default_environment,_and_audit_event' duration='17'/>
+    <testCase name='test_returns_forbidden_when_actor_is_not_a_team_member' duration='1'/>
+  </file>
+  <file path='test/models/audit_event_test.rb'>
+    <testCase name='test_requires_occurred_at_and_action' duration='1'/>
+    <testCase name='test_requires_occurred_at_and_action' duration='1'/>
+  </file>
+  <file path='test/models/deployment_target_test.rb'>
+    <testCase name='test_requires_unique_name' duration='1'/>
+    <testCase name='test_requires_unique_name' duration='2'/>
+  </file>
+  <file path='test/services/deployment_targets/seed_default_test.rb'>
+    <testCase name='test_creates_the_default_deployment_target_idempotently' duration='3'/>
+    <testCase name='test_creates_the_default_deployment_target_idempotently' duration='2'/>
+  </file>
+  <file path='test/models/environment_test.rb'>
+    <testCase name='test_requires_name' duration='1'/>
+    <testCase name='test_requires_default_to_be_boolean' duration='1'/>
+    <testCase name='test_requires_default_to_be_boolean' duration='1'/>
+    <testCase name='test_requires_name' duration='1'/>
+  </file>
+  <file path='test/controllers/home_controller_test.rb'>
+    <testCase name='test_root_landing_page_is_available' duration='14'/>
+    <testCase name='test_health_endpoint_is_available' duration='2'/>
+  </file>
+  <file path='test/models/membership_test.rb'>
+    <testCase name='test_requires_valid_role' duration='1'/>
+    <testCase name='test_enforces_unique_user_and_team_pair' duration='1'/>
+    <testCase name='test_enforces_unique_user_and_team_pair' duration='30'/>
+    <testCase name='test_requires_valid_role' duration='1'/>
+  </file>
+  <file path='test/models/team_test.rb'>
+    <testCase name='test_requires_name' duration='1'/>
+    <testCase name='test_requires_name' duration='0'/>
+  </file>
+  <file path='test/models/user_test.rb'>
+    <testCase name='test_requires_unique_email' duration='1'/>
+    <testCase name='test_requires_unique_email' duration='1'/>
+  </file>
+</testExecutions>
