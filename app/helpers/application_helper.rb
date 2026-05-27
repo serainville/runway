@@ -1,4 +1,39 @@
 module ApplicationHelper
+  USER_AVATAR_BRAND_COLORS = [
+    "#d946ef", # fuchsia-500
+    "#c026d3", # fuchsia-600
+    "#a21caf", # fuchsia-700
+    "#3b82f6", # blue-500
+    "#2563eb", # blue-600
+    "#1d4ed8", # blue-700
+    "#8b5cf6", # violet-500
+    "#7c3aed", # violet-600
+    "#6366f1", # indigo-500
+    "#0ea5e9", # sky-500
+    "#0284c7", # sky-600
+    "#14b8a6"  # teal-500
+  ].freeze
+
+  def user_profile_display_name(user)
+    user.name.presence || user.username
+  end
+
+  def user_avatar_initials(user)
+    name_parts = user.name.to_s.strip.split(/\s+/).reject(&:blank?)
+    if name_parts.size >= 2
+      "#{name_parts.first[0]}#{name_parts.last[0]}".upcase
+    else
+      user.username.to_s.strip[0, 2].to_s.upcase
+    end
+  end
+
+  def user_avatar_style(user)
+    seed_source = [user.id, user.username, user.email].compact.join("-")
+    color = USER_AVATAR_BRAND_COLORS[seed_source.each_byte.sum % USER_AVATAR_BRAND_COLORS.length]
+
+    "background-color: #{color};"
+  end
+
   def application_runtime_label(application)
     runtime_key = runtime_key_for(application)
     runtime_item = Runtimes::Catalog.find(runtime_key)
