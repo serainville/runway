@@ -33,13 +33,22 @@ Project-scoped repository connections use the same required fields and validatio
 
 When creating an app, the user provides:
 
-- The application repository URL
-- An optional repository connection
+- A repository connection
+- A repository source choice:
+	- Enter repository URL
+	- Select from available repositories
 
 Runway shows a drop-down of available repository connections:
 
 - Global connections labeled `Global: ...`
 - Project-local connections labeled `Project: ...`
+
+When a user chooses `Select from available repositories`, Runway loads repository options that the selected connection can access.
+
+When a user enters a repository URL or selects a repository, Runway can verify repository access and shows status inline:
+
+- Green check icon when access is verified
+- Warning or error icon with a troubleshooting message when verification fails
 
 If the user does not explicitly choose a connection, Runway derives one from the repository URL only when exactly one available connection has an endpoint that matches the repository URL prefix.
 

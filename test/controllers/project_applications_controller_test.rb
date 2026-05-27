@@ -83,4 +83,86 @@ class ProjectApplicationsControllerTest < ActionDispatch::IntegrationTest
     get project_application_url(projects(:one), app)
     assert_response :forbidden
   end
+
+  test "member can discover repositories for a selected repository connection" do
+    post session_url, params: {
+      session: {
+        username: users(:one).username,
+        password: "password123"
+      }
+    }
+
+    discoverer_singleton = RepositoryConnections::DiscoverRepositories.singleton_class
+    original_call = discoverer_singleton.instance_method(:call)
+
+    discoverer_singleton.send(:define_method, :call) do |**_kwargs|
+      RepositoryConnections::DiscoverRepositories::Result.new(
+        success?: true,
+        repositories: [
+          { name: "tenant/ledger-api", url: "https://gitlab.example.com/tenant/ledger-api.git" },
+          { name: "tenant/payments-api", url: "https://gitlab.example.com/tenant/payments-api.git" }
+        ]
+      )
+    end
+
+    begin
+      get discover_repositories_project_applications_url(projects(:one)), params: {
+        repository_connection_id: repository_connections(:project_one_gitlab).id
+      }
+    ensure
+      discoverer_singleton.send(:define_method, :call, original_call)
+    end
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal true, body["success"]
+    assert_equal 2, body["repositories"].size
+    assert_equal "tenant/ledger-api", body["repositories"][0]["name"]
+  end
+
+  test "non-member cannot discover repositories" do
+    post session_url, params: {
+      session: {
+        username: users(:two).username,
+        password: "password123"
+      }
+    }
+
+    get discover_repositories_project_applications_url(projects(:one)), params: {
+      repository_connection_id: repository_connections(:project_one_gitlab).id
+    }
+
+    assert_response :forbidden
+  end
+
+  test "member can verify repository access from selected repository" do
+    post session_url, params: {
+      session: {
+        username: users(:one).username,
+        password: "password123"
+      }
+    }
+
+    verifier_singleton = Applications::VerifyRepositoryAccess.singleton_class
+    original_call = verifier_singleton.instance_method(:call)
+
+    verifier_singleton.send(:define_method, :call) do |**_kwargs|
+      Applications::VerifyRepositoryAccess::Result.new(success?: true, status: :verified, message: "Repository verified")
+    end
+
+    begin
+      post verify_repository_access_project_applications_url(projects(:one)), params: {
+        repository_connection_id: repository_connections(:project_one_gitlab).id,
+        repository_input_mode: "select",
+        selected_repository_url: "https://gitlab.example.com/tenant/ledger-api.git"
+      }
+    ensure
+      verifier_singleton.send(:define_method, :call, original_call)
+    end
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal true, body["success"]
+    assert_equal "verified", body["status"]
+  end
 end

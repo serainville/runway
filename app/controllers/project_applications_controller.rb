@@ -16,7 +16,9 @@ class ProjectApplicationsController < ApplicationController
     @application = @project.applications.new
     @selected_runtime_key = nil
     @selected_repository_connection_id = nil
+    @repository_input_mode = "manual"
     @repository_url = nil
+    @selected_repository_url = nil
   end
 
   def create
@@ -30,9 +32,46 @@ class ProjectApplicationsController < ApplicationController
     @application = @project.applications.new(name: application_params[:name], description: application_params[:description])
     @selected_runtime_key = application_params[:runtime_key]
     @selected_repository_connection_id = application_params[:repository_connection_id]
+    @repository_input_mode = application_params[:repository_input_mode].presence || "manual"
     @repository_url = application_params[:repository_url]
+    @selected_repository_url = application_params[:selected_repository_url]
     flash.now[:alert] = result.message
     render :new, status: :unprocessable_entity
+  end
+
+  def discover_repositories
+    result = RepositoryConnections::DiscoverRepositories.call(
+      actor: current_user,
+      project: @project,
+      repository_connection_id: params[:repository_connection_id]
+    )
+
+    if result.success?
+      render json: { success: true, repositories: result.repositories }
+    elsif result.error == :forbidden
+      head :forbidden
+    else
+      render json: { success: false, repositories: [], message: result.message }, status: :unprocessable_entity
+    end
+  end
+
+  def verify_repository_access
+    result = Applications::VerifyRepositoryAccess.call(
+      actor: current_user,
+      project: @project,
+      repository_connection_id: params[:repository_connection_id],
+      repository_input_mode: params[:repository_input_mode],
+      repository_url: params[:repository_url],
+      selected_repository_url: params[:selected_repository_url]
+    )
+
+    if result.success?
+      render json: { success: true, status: result.status.to_s, message: result.message, repository_url: result.repository_url }
+    elsif result.error == :forbidden
+      head :forbidden
+    else
+      render json: { success: false, status: result.status.to_s, message: result.message }, status: :unprocessable_entity
+    end
   end
 
   private
@@ -52,7 +91,7 @@ class ProjectApplicationsController < ApplicationController
   end
 
   def application_params
-    params.require(:application).permit(:name, :description, :runtime_key, :repository_connection_id, :repository_url)
+    params.require(:application).permit(:name, :description, :runtime_key, :repository_connection_id, :repository_input_mode, :repository_url, :selected_repository_url)
   end
 
   def service_params
@@ -61,7 +100,9 @@ class ProjectApplicationsController < ApplicationController
       description: application_params[:description],
       runtime_key: application_params[:runtime_key],
       repository_connection_id: application_params[:repository_connection_id],
-      repository_url: application_params[:repository_url]
+      repository_input_mode: application_params[:repository_input_mode],
+      repository_url: application_params[:repository_url],
+      selected_repository_url: application_params[:selected_repository_url]
     }
   end
 

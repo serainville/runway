@@ -23,6 +23,10 @@ Rails.application.routes.draw do
       patch :validate_connection, on: :member
     end
     resources :applications, only: [:index, :show, :new, :create], controller: :project_applications do
+      collection do
+        get :discover_repositories
+        post :verify_repository_access
+      end
       resources :environments, only: [:show], controller: :application_environments
     end
   end

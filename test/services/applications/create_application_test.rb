@@ -163,4 +163,24 @@ class ApplicationsCreateApplicationTest < ActiveSupport::TestCase
     assert_equal :validation_failed, result.error
     assert_includes result.message, "could not authenticate"
   end
+
+  test "creates application from selected repository url when repository input mode is select" do
+    assert_difference("Application.count", 1) do
+      result = Applications::CreateApplication.call(
+        actor: users(:one),
+        project: projects(:one),
+        params: {
+          name: "Selected Repo App",
+          runtime_key: "ruby-4",
+          repository_input_mode: "select",
+          selected_repository_url: "https://gitlab.example.com/tenant/selected-repo.git",
+          repository_connection_id: repository_connections(:project_one_gitlab).id
+        },
+        verifier: FakeRepositoryVerifierSuccess
+      )
+
+      assert result.success?
+      assert_equal "https://gitlab.example.com/tenant/selected-repo.git", result.application.repository_url
+    end
+  end
 end

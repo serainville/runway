@@ -27,22 +27,67 @@
       <%= form.text_area :description, rows: 4, class: "w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/20 dark:border-white/10 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-500" %>
     </div>
 
-    <div class="grid gap-6 sm:grid-cols-2">
-      <div>
-        <%= form.label :repository_url, "Repository URL", class: "mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200" %>
-        <%= form.url_field :repository_url, value: @repository_url, required: true, class: "w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/20 dark:border-white/10 dark:bg-slate-950/60 dark:text-white" %>
-      </div>
-      <div>
-        <%= form.label :repository_connection_id, "Repository connection", class: "mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200" %>
-        <%= form.select :repository_connection_id,
-                        options_for_select(@repository_connections.map { |connection| [connection.selection_label, connection.id] }, @selected_repository_connection_id),
-                        { prompt: "Select a repository connection or derive from URL" },
-                        class: "w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/20 dark:border-white/10 dark:bg-slate-950/60 dark:text-white" %>
-      </div>
-    </div>
+    <div
+      data-controller="repository-access"
+      data-repository-access-discover-url-value="<%= discover_repositories_project_applications_path(@project) %>"
+      data-repository-access-verify-url-value="<%= verify_repository_access_project_applications_path(@project) %>">
+      <div class="grid gap-6 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+          <span class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">Repository Source</span>
+          <div class="flex flex-wrap gap-4 rounded-2xl border border-slate-300 bg-white px-4 py-3 dark:border-white/10 dark:bg-slate-950/60">
+            <label class="inline-flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+              <input type="radio" name="repository_input_mode_selector" value="manual" <%= (@repository_input_mode != "select") ? "checked" : "" %> data-action="repository-access#setMode" class="h-4 w-4 border-slate-300 text-fuchsia-600 focus:ring-fuchsia-500" />
+              Enter repository URL
+            </label>
+            <label class="inline-flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+              <input type="radio" name="repository_input_mode_selector" value="select" <%= (@repository_input_mode == "select") ? "checked" : "" %> data-action="repository-access#setMode" class="h-4 w-4 border-slate-300 text-fuchsia-600 focus:ring-fuchsia-500" />
+              Select from available repositories
+            </label>
+          </div>
+          <%= form.hidden_field :repository_input_mode, value: @repository_input_mode || "manual", data: { repository_access_target: "modeInput" } %>
+        </div>
 
-    <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-white/10 dark:bg-slate-950/50 dark:text-slate-300">
-      Select a shared or project-local repository connection for authentication, or leave it blank to derive one from the repository URL when exactly one endpoint matches.
+        <div>
+          <%= form.label :repository_connection_id, "Repository connection", class: "mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200" %>
+          <%= form.select :repository_connection_id,
+                          options_for_select(@repository_connections.map { |connection| [connection.selection_label, connection.id] }, @selected_repository_connection_id),
+                          { prompt: "Select a repository connection" },
+                          data: { repository_access_target: "connectionSelect", action: "change->repository-access#connectionChanged" },
+                          class: "w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/20 dark:border-white/10 dark:bg-slate-950/60 dark:text-white" %>
+        </div>
+
+        <div data-repository-access-target="manualWrapper">
+          <%= form.label :repository_url, "Repository URL", class: "mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200" %>
+          <%= form.url_field :repository_url,
+                             value: @repository_url,
+                             required: true,
+                             data: { repository_access_target: "manualUrlInput", action: "blur->repository-access#verify" },
+                             class: "w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/20 dark:border-white/10 dark:bg-slate-950/60 dark:text-white" %>
+        </div>
+
+        <div data-repository-access-target="selectWrapper" class="hidden">
+          <%= label_tag "application_selected_repository_url", "Available repositories", class: "mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200" %>
+          <%= select_tag "application[selected_repository_url]",
+                         options_for_select(@selected_repository_url.present? ? [[@selected_repository_url, @selected_repository_url]] : [], @selected_repository_url),
+                         include_blank: "Choose a repository",
+                         data: { repository_access_target: "availableRepositoriesSelect", action: "change->repository-access#verify" },
+                         class: "w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/20 dark:border-white/10 dark:bg-slate-950/60 dark:text-white" %>
+        </div>
+
+        <div class="sm:col-span-2">
+          <div class="flex flex-wrap items-center gap-3">
+            <button type="button" data-action="repository-access#verify" class="rounded-full border border-slate-300 px-4 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/10">Check repository access</button>
+            <div data-repository-access-target="statusContainer" class="hidden items-center gap-2 rounded-full border border-slate-200 px-3 py-1 text-xs font-medium dark:border-white/10">
+              <span data-repository-access-target="statusIcon"></span>
+              <span data-repository-access-target="statusText"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-white/10 dark:bg-slate-950/50 dark:text-slate-300">
+        Select a shared or project-local repository connection for authentication. You can enter a repository URL directly or choose from repositories the selected connection can access.
+      </div>
     </div>
 
     <div class="flex flex-wrap gap-3 pt-2">
