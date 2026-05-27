@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites>
-  <testsuite name="TeamTest" filepath="test/models/team_test.rb" skipped="0" failures="0" errors="0" tests="1" assertions="3" time="0.0004910000134259462">
-    <testcase name="test_requires_name" lineno="4" classname="TeamTest" assertions="3" time="0.0004910000134259462" file="test/models/team_test.rb">
-    </testcase>
-  </testsuite>
-</testsuites>

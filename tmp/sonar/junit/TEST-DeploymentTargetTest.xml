@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites>
-  <testsuite name="DeploymentTargetTest" filepath="test/models/deployment_target_test.rb" skipped="0" failures="0" errors="0" tests="1" assertions="3" time="0.0018780000391416252">
-    <testcase name="test_requires_unique_name" lineno="4" classname="DeploymentTargetTest" assertions="3" time="0.0018780000391416252" file="test/models/deployment_target_test.rb">
-    </testcase>
-  </testsuite>
-</testsuites>

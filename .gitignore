@@ -1,0 +1,64 @@
+# Ignore bundler config and local gems
+/.bundle
+/vendor/bundle
+
+# Ignore local environment files
+.env
+.env.*
+!.env.example
+/executor/.env
+/executor/.env.*
+!/executor/.env.example
+
+# Ignore database files
+/db/*.sqlite3
+/db/*.sqlite3-*
+/storage/*.sqlite3
+/storage/*.sqlite3-*
+
+# Ignore logs and temp files
+/log/*
+!/log/.keep
+/tmp/*
+!/tmp/.keep
+
+# Ignore PID files, sockets, and caches
+/tmp/pids/*
+!/tmp/pids/.keep
+/tmp/cache/*
+!/tmp/cache/.keep
+/tmp/sockets/*
+!/tmp/sockets/.keep
+
+# Ignore uploaded/decrypted storage artifacts
+/storage/*
+!/storage/.keep
+
+# Ignore generated assets
+/public/assets
+/public/packs
+/public/packs-test
+/node_modules
+/yarn-error.log
+
+# Ignore test and coverage artifacts
+/coverage
+/tmp/screenshots
+/tmp/capybara
+/tmp/sonar
+
+# Ignore credentials and secrets
+/config/master.key
+/config/credentials/*.key
+
+# Ignore editor and OS files
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Ignore language server and static analysis caches
+.sorbet/
+.rubocop-*

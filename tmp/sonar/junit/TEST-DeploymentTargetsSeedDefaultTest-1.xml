@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites>
-  <testsuite name="DeploymentTargetsSeedDefaultTest" filepath="test/services/deployment_targets/seed_default_test.rb" skipped="0" failures="0" errors="0" tests="1" assertions="5" time="0.0030409999890252948">
-    <testcase name="test_creates_the_default_deployment_target_idempotently" lineno="4" classname="DeploymentTargetsSeedDefaultTest" assertions="5" time="0.0030409999890252948" file="test/services/deployment_targets/seed_default_test.rb">
-    </testcase>
-  </testsuite>
-</testsuites>

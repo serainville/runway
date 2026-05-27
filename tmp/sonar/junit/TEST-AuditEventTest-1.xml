@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites>
-  <testsuite name="AuditEventTest" filepath="test/models/audit_event_test.rb" skipped="0" failures="0" errors="0" tests="1" assertions="5" time="0.0008440000237897038">
-    <testcase name="test_requires_occurred_at_and_action" lineno="4" classname="AuditEventTest" assertions="5" time="0.0008440000237897038" file="test/models/audit_event_test.rb">
-    </testcase>
-  </testsuite>
-</testsuites>
