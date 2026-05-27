@@ -1,0 +1,61 @@
+name: Bug report
+description: Report a reproducible problem in Runway
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug.
+        Please provide enough detail for us to reproduce and diagnose the issue.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened?
+      placeholder: A short, clear description of the issue
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include exact steps, commands, and input data
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. Run ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or screenshots
+      description: Paste logs or screenshots if available
+      render: shell
+  - type: input
+    id: version
+    attributes:
+      label: Runway version/commit
+      description: Commit SHA, branch, or release tag
+      placeholder: main @ abc123
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Local, staging, or other environment details
+      placeholder: macOS + Ruby 3.3 + SQLite

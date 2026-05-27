@@ -56,4 +56,17 @@ class DeploymentTargetTest < ActiveSupport::TestCase
 
     assert target.valid?
   end
+
+  test "deployment target rejects unsupported backend type" do
+    target = DeploymentTarget.new(
+      name: "invalid-backend-type",
+      backend_type: "docker",
+      endpoint: "https://k8s.example.com",
+      credential_reference: "vault://backends/k8s-a/token",
+      ca_bundle_reference: "vault://backends/k8s-a/ca"
+    )
+
+    assert_not target.valid?
+    assert_includes target.errors[:backend_type], "is not included in the list"
+  end
 end

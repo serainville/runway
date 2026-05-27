@@ -1,0 +1,10 @@
+source "https://rubygems.org"
+
+gem "rack", "~> 3.0"
+gem "puma", "~> 6.0"
+gem "json_schemer", "~> 2.4"
+gem "faraday", "~> 2.0"
+
+group :development, :test do
+  gem "rspec", "~> 3.0"
+end

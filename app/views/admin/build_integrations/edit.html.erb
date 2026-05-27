@@ -1,0 +1,27 @@
+<section class="space-y-8">
+  <div>
+    <h1 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">Modify Executor Registration</h1>
+    <p class="mt-2 text-slate-600 dark:text-slate-300">Update executor registration settings used by build command execution.</p>
+  </div>
+
+  <%= render "build_settings_nav" %>
+
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <%= form_with model: [:admin, @build_integration], url: admin_build_integration_path(@build_integration), scope: :build_integration, method: :patch, local: true, class: "grid gap-3 sm:grid-cols-2" do |form| %>
+      <%= form.hidden_field :integration_type, value: "executor_registration" %>
+      <%= form.text_field :name, required: true, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.text_field :endpoint, required: true, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.text_field :credential_reference, placeholder: "Credential reference", class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <%= form.text_area :ca_bundle_reference, placeholder: "CA bundle", rows: 4, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <label class="inline-flex items-center gap-2 text-sm sm:col-span-2">
+        <%= form.check_box :active %>
+        Active
+      </label>
+      <%= form.text_field :description, placeholder: "Description", class: "sm:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      <div class="sm:col-span-2 flex items-center gap-2">
+        <%= form.submit "Save changes", class: "rounded-full bg-fuchsia-600 px-5 py-2 text-sm font-medium text-white" %>
+        <%= link_to "Back to executor list", executors_admin_build_integrations_path, class: "rounded-full border border-slate-300 bg-white px-5 py-2 text-sm font-medium text-slate-700 dark:border-white/10 dark:bg-slate-900/70 dark:text-slate-200" %>
+      </div>
+    <% end %>
+  </div>
+</section>

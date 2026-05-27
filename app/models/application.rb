@@ -4,6 +4,7 @@ class Application < ApplicationRecord
   belongs_to :repository_connection, optional: true
   belongs_to :runtime_option, optional: true
   has_many :environments, dependent: :destroy
+  has_many :builds, dependent: :destroy
   has_many :audit_events, as: :auditable, dependent: :nullify
 
   validates :name, presence: true
@@ -11,6 +12,7 @@ class Application < ApplicationRecord
   validates :repository_url, presence: true, if: :project_owned?
   validates :runtime, presence: true, if: :project_owned?
   validates :runtime_version, presence: true, if: :project_owned?
+  validates :current_commit_sha, format: { with: /\A[0-9a-f]{40}\z/i, message: "must be a 40-character SHA" }, allow_blank: true
 
   validates :name, uniqueness: { scope: :team_id, case_sensitive: false }, if: :team_owned?
   validates :slug, uniqueness: { scope: :team_id, case_sensitive: false }, if: :team_owned?

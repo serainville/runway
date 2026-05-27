@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json"
+
+require_relative "../config/app"
+require_relative "../lib/executor/builds/run_sequence"
+require_relative "../lib/executor/adapters/docker/run_step"
+require_relative "../lib/executor/adapters/kubernetes/run_step"
+
+def usage!
+	warn "Usage: bin/worker path/to/build_command.json"
+	exit 1
+end
+
+payload_path = ARGV[0]
+usage! if payload_path.to_s.strip.empty?
+
+command = JSON.parse(File.read(payload_path))
+
+adapter = case Executor::Config.backend_mode
+					when "docker"
+						Executor::Adapters::Docker::RunStep.new
+					when "kubernetes"
+						Executor::Adapters::Kubernetes::RunStep.new
+					else
+						raise ArgumentError, "Unsupported EXECUTOR_BACKEND_MODE: #{Executor::Config.backend_mode}"
+					end
+
+result = Executor::Builds::RunSequence.new(adapter: adapter).call(command: command)
+
+puts JSON.generate(result)
+exit(result[:ok] ? 0 : 2)

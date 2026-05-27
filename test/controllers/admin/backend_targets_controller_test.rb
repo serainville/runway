@@ -16,7 +16,7 @@ module Admin
     assert_response :forbidden
   end
 
-  test "admin can create and update backend target" do
+  test "admin can create and update kubernetes backend target" do
     post session_url, params: { session: { username: users(:admin).username, password: "password123" } }
 
     assert_difference("DeploymentTarget.count", 1) do
@@ -41,14 +41,17 @@ module Admin
     assert_difference("AuditEvent.count", 1) do
       patch admin_backend_target_url(target), params: {
         backend_target: {
-          backend_type: "docker",
-          endpoint: "tcp://docker-a.example.com:2376"
+          backend_type: "kubernetes",
+          endpoint: "https://k8s-b.example.com",
+          credential_reference: "raw-k8s-service-account-token-b",
+          ca_bundle_reference: "-----BEGIN CERTIFICATE-----\ndef\n-----END CERTIFICATE-----"
         }
       }
     end
 
     assert_redirected_to admin_backend_targets_url
-    assert_equal "docker", target.reload.backend_type
+    assert_equal "kubernetes", target.reload.backend_type
+    assert_equal "https://k8s-b.example.com", target.reload.endpoint
   end
 
   test "admin can validate backend target connection" do

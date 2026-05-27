@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_27_013000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_201100) do
   create_table "applications", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "current_commit_sha"
     t.text "description"
     t.string "name", null: false
     t.integer "project_id"
@@ -24,6 +25,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_013000) do
     t.string "slug", null: false
     t.integer "team_id"
     t.datetime "updated_at", null: false
+    t.index ["current_commit_sha"], name: "index_applications_on_current_commit_sha"
     t.index ["project_id", "name"], name: "index_applications_on_project_id_and_name", unique: true
     t.index ["project_id", "slug"], name: "index_applications_on_project_id_and_slug", unique: true
     t.index ["project_id"], name: "index_applications_on_project_id"
@@ -48,6 +50,99 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_013000) do
     t.index ["auditable_type", "auditable_id"], name: "index_audit_events_on_auditable"
     t.index ["occurred_at"], name: "index_audit_events_on_occurred_at"
     t.index ["team_id"], name: "index_audit_events_on_team_id"
+  end
+
+  create_table "build_host_request_events", force: :cascade do |t|
+    t.integer "build_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "duration_ms"
+    t.string "error_code"
+    t.text "error_message"
+    t.string "request_method", null: false
+    t.string "request_path", null: false
+    t.integer "response_status_code", null: false
+    t.boolean "success", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["build_id", "created_at"], name: "index_build_host_events_on_build_created"
+    t.index ["build_id"], name: "index_build_host_request_events_on_build_id"
+  end
+
+  create_table "build_integrations", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.text "ca_bundle_reference", default: "", null: false
+    t.datetime "created_at", null: false
+    t.string "credential_reference", default: "", null: false
+    t.boolean "default", default: false, null: false
+    t.text "description"
+    t.string "endpoint", null: false
+    t.string "integration_type", default: "docker_host", null: false
+    t.datetime "last_heartbeat_at"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.string "validation_status", default: "pending", null: false
+    t.index ["active"], name: "index_build_integrations_on_active"
+    t.index ["default"], name: "index_build_integrations_on_default"
+    t.index ["default"], name: "index_build_integrations_single_default", unique: true, where: "\"default\" = 1"
+    t.index ["integration_type"], name: "index_build_integrations_on_integration_type"
+    t.index ["last_heartbeat_at"], name: "index_build_integrations_on_last_heartbeat_at"
+    t.index ["name"], name: "index_build_integrations_on_name", unique: true
+  end
+
+  create_table "build_log_chunks", force: :cascade do |t|
+    t.integer "build_id", null: false
+    t.text "chunk", null: false
+    t.datetime "created_at", null: false
+    t.string "phase", null: false
+    t.datetime "reported_at", null: false
+    t.integer "sequence", null: false
+    t.datetime "updated_at", null: false
+    t.index ["build_id", "phase", "sequence"], name: "index_build_log_chunks_on_build_phase_sequence", unique: true
+    t.index ["build_id"], name: "index_build_log_chunks_on_build_id"
+  end
+
+  create_table "build_phase_events", force: :cascade do |t|
+    t.integer "build_id", null: false
+    t.datetime "created_at", null: false
+    t.string "failure_code"
+    t.text "message"
+    t.string "phase", null: false
+    t.datetime "reported_at", null: false
+    t.string "status", null: false
+    t.datetime "updated_at", null: false
+    t.index ["build_id", "created_at"], name: "index_build_phase_events_on_build_id_and_created_at"
+    t.index ["build_id", "phase"], name: "index_build_phase_events_on_build_id_and_phase"
+    t.index ["build_id"], name: "index_build_phase_events_on_build_id"
+  end
+
+  create_table "builds", force: :cascade do |t|
+    t.integer "application_id", null: false
+    t.string "artifact_reference"
+    t.integer "build_integration_id"
+    t.boolean "cancel_requested", default: false, null: false
+    t.string "commit_sha", default: "manual", null: false
+    t.datetime "created_at", null: false
+    t.text "error_summary"
+    t.string "failure_code"
+    t.datetime "finished_at"
+    t.datetime "lease_expires_at"
+    t.string "lease_id"
+    t.integer "requested_by_id", null: false
+    t.integer "retry_count", default: 0, null: false
+    t.string "runtime_container_id"
+    t.string "runtime_key", null: false
+    t.string "runtime_status"
+    t.string "source_ref", default: "main", null: false
+    t.datetime "started_at"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.string "worker_id"
+    t.index ["application_id", "created_at"], name: "index_builds_on_application_id_and_created_at"
+    t.index ["application_id"], name: "index_builds_on_application_id"
+    t.index ["build_integration_id"], name: "index_builds_on_build_integration_id"
+    t.index ["lease_id"], name: "index_builds_on_lease_id", unique: true
+    t.index ["requested_by_id"], name: "index_builds_on_requested_by_id"
+    t.index ["runtime_container_id"], name: "index_builds_on_runtime_container_id"
+    t.index ["status"], name: "index_builds_on_status"
   end
 
   create_table "deployment_targets", force: :cascade do |t|
@@ -176,6 +271,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_013000) do
   add_foreign_key "applications", "teams"
   add_foreign_key "audit_events", "teams"
   add_foreign_key "audit_events", "users", column: "actor_id"
+  add_foreign_key "build_host_request_events", "builds"
+  add_foreign_key "build_log_chunks", "builds"
+  add_foreign_key "build_phase_events", "builds"
+  add_foreign_key "builds", "applications"
+  add_foreign_key "builds", "build_integrations"
+  add_foreign_key "builds", "users", column: "requested_by_id"
   add_foreign_key "environments", "applications"
   add_foreign_key "environments", "deployment_targets"
   add_foreign_key "external_identities", "users"

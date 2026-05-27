@@ -7,11 +7,12 @@ class DeploymentTargetsManageTargetsTest < ActiveSupport::TestCase
         result = DeploymentTargets::CreateTarget.call(
           actor: users(:admin),
           params: {
-            name: "Docker Host A",
-            description: "Primary docker host",
-            backend_type: "docker",
-            endpoint: "tcp://docker-a.example.com:2376",
-            credential_reference: "vault://backends/docker-a"
+            name: "Tenant Kubernetes A",
+            description: "Primary non-production target",
+            backend_type: "kubernetes",
+            endpoint: "https://k8s-a.example.com",
+            credential_reference: "vault://backends/k8s-a/token",
+            ca_bundle_reference: "vault://backends/k8s-a/ca"
           }
         )
 

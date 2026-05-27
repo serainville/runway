@@ -1,7 +1,7 @@
 class ProjectApplicationsController < ApplicationController
   before_action :require_current_user!
   before_action :set_project
-  before_action :set_application, only: :show
+  before_action :set_application, only: [:show, :start_build]
   before_action :set_runtime_options, only: [:new, :create]
   before_action :set_repository_connections, only: [:new, :create]
 
@@ -10,6 +10,25 @@ class ProjectApplicationsController < ApplicationController
   end
 
   def show
+    @recent_builds = @application.builds.includes(:requested_by).order(created_at: :desc).limit(10)
+    @current_commit_sha = @application.current_commit_sha.presence || @application.builds.where.not(commit_sha: "manual").order(created_at: :desc).pick(:commit_sha)
+  end
+
+  def start_build
+    result = Applications::StartBuild.call(
+      actor: current_user,
+      project: @project,
+      application: @application,
+      params: start_build_params
+    )
+
+    if result.success?
+      redirect_to project_application_path(@project, @application), notice: "Build requested"
+    elsif result.error == :forbidden
+      head :forbidden
+    else
+      redirect_to project_application_path(@project, @application), alert: result.message
+    end
   end
 
   def new
@@ -104,6 +123,10 @@ class ProjectApplicationsController < ApplicationController
       repository_url: application_params[:repository_url],
       selected_repository_url: application_params[:selected_repository_url]
     }
+  end
+
+  def start_build_params
+    params.permit(:source_ref, :commit_sha)
   end
 
   def set_runtime_options

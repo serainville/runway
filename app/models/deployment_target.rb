@@ -1,5 +1,5 @@
 class DeploymentTarget < ApplicationRecord
-	BACKEND_TYPES = %w[kubernetes docker].freeze
+	BACKEND_TYPES = %w[kubernetes].freeze
 	VALIDATION_STATUSES = %w[pending validated validation_failed].freeze
 
 	has_many :environments, dependent: :restrict_with_error

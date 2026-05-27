@@ -116,6 +116,9 @@ Required fields:
 ## Normalized Callback Contract
 Executors must report status using a normalized payload shape.
 
+Detailed request and lifecycle protocol is documented in `docs/BUILD_WORKER_PROTOCOL.md`.
+Implementation ticket breakdown is documented in `docs/BUILD_IMPLEMENTATION_TICKETS.md`.
+
 ### Required Fields
 1. `build_id`
 2. `phase`

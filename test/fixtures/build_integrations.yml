@@ -1,0 +1,16 @@
+docker_primary:
+  name: docker-primary
+  integration_type: docker_host
+  endpoint: http://10.0.0.48:2375
+  validation_status: pending
+  active: true
+  description: Primary Docker host
+
+executor_nonp:
+  name: executor-nonp
+  integration_type: executor_registration
+  endpoint: http://127.0.0.1:4100
+  validation_status: pending
+  active: true
+  last_heartbeat_at: <%= 2.minutes.ago %>
+  description: Non-production executor service

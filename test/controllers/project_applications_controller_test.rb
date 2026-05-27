@@ -84,6 +84,95 @@ class ProjectApplicationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  test "member can start a build for an application" do
+    app = Application.create!(
+      project: projects(:one),
+      name: "Build Trigger App",
+      runtime: "ruby",
+      runtime_version: "4",
+      repository_url: "https://gitlab.example.com/tenant/build-trigger.git",
+      repository_connection: repository_connections(:project_one_gitlab)
+    )
+
+    post session_url, params: {
+      session: {
+        username: users(:one).username,
+        password: "password123"
+      }
+    }
+
+    assert_difference("Build.count", 1) do
+      post start_build_project_application_url(projects(:one), app), params: {
+        source_ref: "main",
+        commit_sha: "abc1234"
+      }
+    end
+
+    assert_redirected_to project_application_url(projects(:one), app)
+  end
+
+  test "application page shows build status history" do
+    app = Application.create!(
+      project: projects(:one),
+      name: "Build Status App",
+      runtime: "ruby",
+      runtime_version: "4",
+      repository_url: "https://gitlab.example.com/tenant/build-status.git",
+      repository_connection: repository_connections(:project_one_gitlab)
+    )
+    Build.create!(
+      application: app,
+      requested_by: users(:one),
+      status: "pending",
+      runtime_key: "ruby-4",
+      source_ref: "main",
+      commit_sha: "abc1234"
+    )
+
+    post session_url, params: {
+      session: {
+        username: users(:one).username,
+        password: "password123"
+      }
+    }
+
+    get project_application_url(projects(:one), app)
+
+    assert_response :success
+    assert_includes response.body, "Build history"
+    assert_includes response.body, "Pending"
+    assert_includes response.body, "Build details"
+    assert_includes response.body, "data-controller=\"auto-refresh\""
+    assert_includes response.body, "data-auto-refresh-enabled-value=\"true\""
+    assert_includes response.body, "data-auto-refresh-target=\"label\""
+    assert_includes response.body, "inline-flex items-center gap-1.5"
+  end
+
+  test "non-member cannot start build" do
+    app = Application.create!(
+      project: projects(:one),
+      name: "Build Forbidden App",
+      runtime: "ruby",
+      runtime_version: "4",
+      repository_url: "https://gitlab.example.com/tenant/build-forbidden.git",
+      repository_connection: repository_connections(:project_one_gitlab)
+    )
+
+    post session_url, params: {
+      session: {
+        username: users(:two).username,
+        password: "password123"
+      }
+    }
+
+    post start_build_project_application_url(projects(:one), app), params: {
+      source_ref: "main",
+      commit_sha: "abc1234"
+    }
+
+    assert_response :forbidden
+  end
+
   test "member can discover repositories for a selected repository connection" do
     post session_url, params: {
       session: {
