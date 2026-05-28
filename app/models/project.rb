@@ -9,6 +9,28 @@ class Project < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
   validates :slug, presence: true, uniqueness: { case_sensitive: false }
+  validates :public, inclusion: { in: [true, false] }
+
+  def role_for(user)
+    return nil unless user
+
+    project_memberships.find_by(user_id: user.id)&.role
+  end
+
+  def owner?(user)
+    role_for(user) == "owner"
+  end
+
+  def contributor_or_owner?(user)
+    role = role_for(user)
+    role == "owner" || role == "contributor"
+  end
+
+  def visible_to?(user)
+    return false unless user
+
+    public? || role_for(user).present?
+  end
 
   private
 

@@ -6,6 +6,7 @@
     <%= form.url_field :endpoint_url, value: repository_connection.endpoint_url, required: true, class: "sm:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
     <%= form.text_field :auth_username, value: repository_connection.auth_username, required: true, class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
     <%= form.password_field :auth_secret, placeholder: "New secret (optional)", class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+    <%= form.password_field :webhook_secret, placeholder: "Webhook secret (optional rotate)", class: "rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
     <%= form.text_area :ca_bundle, value: repository_connection.ca_bundle, placeholder: "Optional CA bundle (PEM)", rows: 3, class: "sm:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
     <div class="sm:col-span-2">
       <%= form.submit "Save changes", class: "rounded-full bg-fuchsia-600 px-5 py-2 text-sm font-medium text-white" %>

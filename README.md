@@ -1,166 +1,292 @@
 # Runway
 
+[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+![Rails](https://img.shields.io/badge/Rails-8.1.3-CC0000?logo=rubyonrails&logoColor=white)
+![Ruby](https://img.shields.io/badge/Ruby-3.3+-CC342D?logo=ruby&logoColor=white)
+![License](https://img.shields.io/badge/License-Private-lightgrey)
+
+Replace `OWNER/REPO` in the CI badge link after publishing.
+
 Runway is a Rails-based control plane for an app-centric deployment platform.
+
+It gives teams a Heroku-like workflow for Kubernetes: users operate in terms of apps, environments, releases, deployments, config vars, domains, logs, and rollbacks, while Kubernetes resources remain implementation details.
+
+## Why Runway
+
+Runway is designed to make deployment feel simple without hiding operational truth.
+
+- App-centric UX: users deploy apps, not YAML.
+- Immutable releases: every deployable version is a distinct release.
+- Durable deployment history: deployment events preserve timeline and context.
+- Safe rollback model: rollback creates a new deployment that references a previous release.
+- Secret safety: secret values are not stored in plaintext and are redacted after creation.
+
+## Quick Start (2 Minutes)
+
+```bash
+git clone https://github.com/OWNER/REPO.git
+cd Runway
+bundle install
+bin/rails db:prepare
+bin/dev
+```
+
+Then open `http://localhost:3000`.
+
+To validate the setup quickly:
+
+```bash
+bin/rails test
+```
+
+## MVP Scope
+
+Included in MVP:
+
+- Rails control plane
+- MySQL in staging/production, SQLite in local development/test
+- GitLab repository integration
+- Nexus image registry integration
+- Vault-backed config vars
+- External Secrets Operator runtime sync
+- Direct deployment to tenant nonp Kubernetes cluster
+- Istio routing
+- Release/deployment model with events and rollback
+- Basic logs and app-centric error translation
+
+Deferred beyond MVP:
+
+- Argo CD
+- Argo Workflows
+- Jenkins
+- SonarQube as a required deployment dependency
+- Redis
+- MinIO
+- tenant prod deployment
+- multi-cluster deployment
+- autoscaling
+
+## Core Concepts
+
+- Project: primary ownership boundary.
+- Project roles: Owner, Contributor, Reviewer.
+- Project visibility: private (members only) or public (authenticated read-only by default).
+- Application: deployable software unit inside a project.
+- Environment: isolated target for deployments (for example nonp).
+- Build: quality-gated artifact creation (lint/tests/image).
+- Release: immutable deployable record (image digest, git SHA, config version).
+- Deployment: an attempt to run a release in an environment.
+- Deployment Event: durable event stream for deployment lifecycle.
+
+## How It Works
+
+### 1) Connect source control
+
+Runway supports reusable repository connections:
+
+- Global connections (admin-managed)
+- Project-scoped connections (project-owner managed)
+
+Runway also supports inbound webhooks for GitLab, GitHub, and Bitbucket. A merged merge-request or pull-request event can automatically request a build when the target application has webhook triggers enabled.
+
+When creating an app, users choose a connection and either paste a repository URL or select an accessible repository. Runway validates endpoint/auth/repository access before app creation.
+
+### 2) Define app and runtime
+
+Users create an application inside a project and choose a runtime from the supported runtime catalog. Runtime choices are release-managed in code.
+
+### 3) Start a build
+
+Runway orchestrates builds through an execution adapter boundary. MVP default is an internal isolated executor running ephemeral builder containers on a Docker host.
+
+Each build runs strict ordered quality gates:
+
+1. lint
+2. tests
+3. image_build
+
+Only successful progression produces a deployable image reference (digest).
+
+### 4) Create immutable release
+
+A successful build produces a release record containing immutable deployment inputs (artifact digest, git SHA, metadata).
+
+### 5) Deploy to environment
+
+Runway deploys the release to tenant nonp through Kubernetes API integration. Generated resources may include namespace, service account, external secret, deployment, service, and Istio virtual service.
+
+For Rails workloads, a release command (for example `bin/rails db:migrate`) can run before web rollout.
+
+### 6) Observe and troubleshoot
+
+Runway surfaces app-centric status and translates platform failures into user-facing guidance.
+
+Examples:
+
+- `ImagePullBackOff`: image pull/registry issue
+- `CrashLoopBackOff`: app starts then exits repeatedly
+- `OOMKilled`: memory limit exceeded
+- `CreateContainerConfigError`: likely missing config var or secret
+
+### 7) Roll back safely
+
+Rollback does not mutate prior releases. It creates a new deployment referencing a previous release, preserving complete history.
+
+## High-Level Architecture
+
+```mermaid
+flowchart LR
+	Dev[Developer] --> UI[Runway UI/CLI]
+	UI --> CP[Runway Rails Control Plane]
+	CP --> DB[(MySQL nonp)]
+	CP --> GIT[GitLab]
+	CP --> REG[Nexus Registry]
+	CP --> VAULT[Vault]
+	CP --> ESO[External Secrets Operator]
+	CP --> K8S[Tenant nonp Kubernetes]
+	K8S --> ISTIO[Istio Routing]
+```
+
+## UI Walkthrough
+
+Use this section to showcase key flows with screenshots or short GIFs when publishing.
+
+Suggested captures:
+
+1. Project creation flow
+2. Application creation with repository verification
+3. Build history and build detail page
+4. Deployment timeline and rollback action
+
+Example markdown snippet:
+
+```md
+### Create a project
+![Create project](docs/images/create-project.png)
+
+### Trigger and observe a build
+![Build lifecycle](docs/images/build-lifecycle.gif)
+```
+
+## Build Execution Model (MVP)
+
+Build execution is adapter-driven so runtime behavior can stay consistent if executor backends evolve.
+
+- Current recommended default: internal Docker-host executor.
+- Future options: Kubernetes pod executor, delegated adapters (for example Jenkins or Argo).
+
+Worker protocol endpoints are exposed for internal executor callbacks under `/internal/builds/worker/*`.
+
+## Security Model
+
+- Team/project isolation by membership.
+- Secret values are stored in Vault-backed flows, not plaintext in MySQL.
+- Secret values are never displayed after creation and must be redacted in logs/UI/API.
+- Deployment credentials are scoped to the required target.
+- Mutation actions should emit audit events.
 
 ## Local Development
 
-Local development and test use SQLite, so MySQL is not required on developer machines.
+Local development and test use SQLite, so MySQL is not required on a developer machine.
 
 ### Prerequisites
 
-- Ruby 3.3.x
+- Ruby 3.3+
 - Bundler
 
 ### Setup
 
-1. Install dependencies:
+```bash
+bundle install
+bin/rails db:prepare
+bin/rails test
+```
 
-	bundle install
+### Run locally
 
-2. Prepare local databases:
+Start just Rails server:
 
-	bin/rails db:prepare
+```bash
+bin/rails server
+```
 
-3. Run tests:
+Or run web + Tailwind watcher via Foreman:
 
-	bin/rails test
+```bash
+bin/dev
+```
 
-## Database Configuration
+### Database strategy by environment
 
 - development: SQLite
 - test: SQLite
 - staging: MySQL
 - production: MySQL
 
-### Staging and Production Environment Variables
+Staging/production environment variables:
 
-Set these for MySQL-backed environments:
+- `DB_HOST`
+- `DB_USERNAME`
+- `DB_PASSWORD`
 
-- DB_HOST
-- DB_USERNAME
-- DB_PASSWORD
+Production also supports `RUNWAY_DATABASE_PASSWORD` and prefers it when set.
 
-Production also supports:
+## Common Application Routes
 
-- RUNWAY_DATABASE_PASSWORD
+- Home: `/`
+- Health: `/up`
+- Registration: `/registration/new`
+- Sign in: `/session/new`
+- Dashboard: `/dashboard`
+- Projects: `/projects`
 
-Notes:
+## Quality and Test Tooling
 
-- If RUNWAY_DATABASE_PASSWORD is present, production uses it.
-- Otherwise production falls back to DB_PASSWORD.
+Run tests:
 
-## Running the App
+```bash
+bin/rails test
+```
 
-Start the Rails server:
+Generate Sonar-compatible artifacts:
 
-bin/rails server
-
-## User Registration and Authentication
-
-Runway supports account registration and session-based authentication.
-
-### User Flows
-
-- Register: /registration/new
-- Sign in: /session/new
-- Sign out: submit the sign-out action in the navigation
-- Protected dashboard: /dashboard
-- Account profile: /account
-
-Unauthenticated requests to protected pages are redirected to sign-in.
-
-### Authentication Mode
-
-Runway uses provider-based authentication routing with local native Rails auth enabled by default.
-
-- RUNWAY_AUTH_MODE=local (default)
-
-Future MVP+ modes (planned, not yet implemented):
-
-- RUNWAY_AUTH_MODE=ldap
-- RUNWAY_AUTH_MODE=oidc
-
-## Project Ownership Model
-
-Runway uses Project as the top-level ownership boundary for authenticated users.
-
-### Project Flows
-
-- Project list: /projects
-- Project detail: /projects/:id
-- Create project: /projects/new
-
-Project visibility is membership-scoped. Users can only see and access projects they belong to.
-
-## Application Definition Inside a Project
-
-Applications are defined inside a Project and include basic repository metadata.
-
-### Application Flows
-
-- Application list in project: /projects/:project_id/applications
-- Application detail: /projects/:project_id/applications/:id
-- Define application: /projects/:project_id/applications/new
-
-### Required Application Fields
-
-- Name
-- Description
-- Runtime (selected from supported runtime/version options)
-- Repository provider
-- Repository URL
-- Default branch
-
-### Initial Supported Runtimes
-
-Runway seeds supported runtimes and versions for app creation:
-
-- Ruby 4
-- Rails 8
-- Go 1.22
-
-Users must choose from the supported runtime list when defining an application.
-
-Runtime catalog items are release-managed and defined in code, not through live admin UI.
-See docs/RUNTIME_CATALOG_PROCESS.md for the process to add new supported runtimes.
-
-Application access is restricted through project membership.
-
-## Bootstrap and Guardrails
-
-Milestone 0 foundation and setup checklist:
-
-- docs/PROJECT_BOOTSTRAP.md
-
-Product guardrails for app-centric development:
-
-- docs/PRODUCT_GUARDRAILS.md
-- AGENTS.md
-- .github/copilot-instructions.md
-
-## SonarQube Scanner Compatibility
-
-Runway can generate Sonar scanner CLI-compatible artifacts for Ruby coverage and test execution.
-
-### Generate Sonar Artifacts
-
-Run:
-
+```bash
 bin/rake quality:sonar_prepare
+```
 
-This generates:
+Artifacts:
 
-- coverage/coverage.json
-- tmp/sonar/test-execution.xml
+- `coverage/coverage.json`
+- `tmp/sonar/test-execution.xml`
 
-### Run Sonar Scanner CLI
+## Repository Guide
 
-After artifacts are generated, run sonar-scanner with your server URL and token.
+- Product and architecture rules: `docs/PRODUCT_GUARDRAILS.md`
+- MVP scope: `docs/MVP_SCOPE.md`
+- Domain model: `docs/DOMAIN_MODEL.md`
+- Deployment model: `docs/DEPLOYMENT_MODEL.md`
+- Security model: `docs/SECURITY_MODEL.md`
+- Repository connection model: `docs/REPOSITORY_CONNECTIONS.md`
+- Build execution ADR: `docs/BUILD_EXECUTION_ADR.md`
+- Build worker protocol: `docs/BUILD_WORKER_PROTOCOL.md`
 
-Example:
+## Current Status
 
-SONAR_TOKEN=your_token sonar-scanner -Dsonar.host.url=https://sonarqube.example.com
+Runway is under active development and currently optimized for the tenant nonp MVP flow.
 
-Scanner defaults are stored in:
+Public roadmap items include production-grade multi-environment expansion, broader executor options, and deeper policy/compliance controls.
 
-- sonar-project.properties
+## Contributing
+
+Contributions are welcome through issues and pull requests.
+
+- Read contribution workflow and standards: `CONTRIBUTING.md`
+- Report bugs: GitHub Issues using the bug template
+- Propose features: GitHub Issues using the feature request template
+- Submit changes: Pull requests using the included PR template
+
+Before opening a pull request:
+
+1. Run `bin/rails test`
+2. Ensure changes follow app-centric product guardrails
+3. Include tests for success and failure paths when behavior changes

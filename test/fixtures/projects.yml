@@ -9,3 +9,9 @@ two:
   name: Platform Project
   slug: platform-project
   description: Project for platform work
+
+public_one:
+  name: Public Project
+  slug: public-project
+  description: Public read project
+  public: true

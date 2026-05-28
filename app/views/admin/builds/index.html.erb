@@ -1,0 +1,45 @@
+<section class="space-y-6"
+         data-controller="auto-refresh"
+         data-auto-refresh-enabled-value="<%= @builds.any? { |build| %w[pending running].include?(build.status) } %>"
+         data-auto-refresh-interval-value="5000">
+  <div>
+    <h1 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">Admin Build Queue</h1>
+    <p class="mt-2 text-slate-600 dark:text-slate-300">Monitor pending, running, and completed builds across projects.</p>
+    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400" data-auto-refresh-target="label"></p>
+  </div>
+
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <table class="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-white/10">
+      <thead class="bg-slate-50 dark:bg-white/5">
+        <tr>
+          <th class="px-4 py-3">Build</th>
+          <th class="px-4 py-3">Status</th>
+          <th class="px-4 py-3">Application</th>
+          <th class="px-4 py-3">Project</th>
+          <th class="px-4 py-3">Requested by</th>
+          <th class="px-4 py-3">Queued at</th>
+          <th class="px-4 py-3">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200 dark:divide-white/10">
+        <% @builds.each do |build| %>
+          <tr>
+            <td class="px-4 py-3 font-medium text-slate-900 dark:text-white">
+              <%= link_to "##{build.id}", admin_build_path(build), class: "underline decoration-dotted underline-offset-2" %>
+            </td>
+            <td class="px-4 py-3">
+              <span class="rounded-full border px-2.5 py-1 text-xs font-medium <%= build_status_badge_classes(build.status) %>"><%= build_status_with_icon(build.status) %></span>
+            </td>
+            <td class="px-4 py-3 text-slate-700 dark:text-slate-300"><%= build.application.name %></td>
+            <td class="px-4 py-3 text-slate-700 dark:text-slate-300"><%= build.application.project.name %></td>
+            <td class="px-4 py-3 text-slate-700 dark:text-slate-300"><%= build.requested_by.username %></td>
+            <td class="px-4 py-3 text-slate-700 dark:text-slate-300"><%= build.created_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+            <td class="px-4 py-3 text-slate-700 dark:text-slate-300">
+              <%= link_to "Build details", admin_build_path(build), class: "rounded-full bg-slate-100 px-3 py-1 text-xs font-medium dark:bg-slate-800" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>

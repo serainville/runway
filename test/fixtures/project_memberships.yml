@@ -8,4 +8,9 @@ owner_one:
 member_two:
   project: two
   user: two
-  role: member
+  role: contributor
+
+reviewer_three:
+  project: one
+  user: three
+  role: reviewer

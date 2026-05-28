@@ -13,9 +13,7 @@
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
     <script>
       (() => {
@@ -37,27 +35,53 @@
       <div class="min-h-screen lg:grid lg:grid-cols-[17rem_1fr]">
         <aside class="border-r border-slate-200/80 bg-white/80 px-4 py-5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80">
           <div class="flex items-center gap-3 px-2">
-            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-blue-600 text-white shadow-lg shadow-fuchsia-500/20">↗</span>
+            <%# <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-blue-600 text-white shadow-lg shadow-fuchsia-500/20">↗</span> %>
+            <%= image_tag "/logo-header-48.png", alt: "Runway logo", class: "h-10 w-10 rounded-2xl object-cover shadow-lg shadow-fuchsia-500/20" %>
             <div>
               <p class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Runway</p>
               <p class="text-xs uppercase tracking-[0.2em] text-fuchsia-600 dark:text-fuchsia-300">Operational</p>
             </div>
           </div>
 
-          <nav class="mt-8 space-y-1 text-sm">
-            <%= link_to "Dashboard", dashboard_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
-            <%= link_to "Projects", projects_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
-            <%= link_to "Create project", new_project_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
-            <%= link_to "Create application", projects_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+          <% nav_link_classes = "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+          <nav class="mt-8 space-y-6 text-sm">
+            <div class="space-y-1">
+              <%= link_to account_path, class: "group flex items-center gap-3 rounded-2xl border border-slate-200/80 px-3 py-2.5 transition hover:border-fuchsia-300 hover:bg-fuchsia-50/70 dark:border-white/10 dark:hover:border-fuchsia-300/40 dark:hover:bg-white/10" do %>
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white shadow-sm" style="<%= user_avatar_style(current_user) %>">
+                  <%= user_avatar_initials(current_user) %>
+                </span>
+                <span class="min-w-0">
+                  <span class="block truncate font-medium text-slate-900 group-hover:text-slate-950 dark:text-white dark:group-hover:text-white"><%= user_profile_display_name(current_user) %></span>
+                  <span class="block text-xs text-slate-500 dark:text-slate-400">View profile</span>
+                </span>
+              <% end %>
+            </div>
+
+            <div class="border-t border-slate-200/80 pt-5 dark:border-white/10">
+              <div class="space-y-1">
+                <p class="px-3 pb-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Workspace</p>
+                <%= link_to "Dashboard", dashboard_path, class: nav_link_classes %>
+                <%= link_to "Projects", projects_path, class: nav_link_classes %>
+                <%= link_to "Create project", new_project_path, class: nav_link_classes %>
+                <%= link_to "Create application", projects_path, class: nav_link_classes %>
+                <a href="/up" class="<%= nav_link_classes %>">Health</a>
+              </div>
+            </div>
+
             <% if admin? %>
-              <%= link_to "Admin users", admin_users_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
-              <%= link_to "Admin projects", admin_projects_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
-              <%= link_to "Admin applications", admin_project_applications_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
-              <%= link_to "Admin repositories", admin_repository_connections_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
-              <%= link_to "Backend setup", admin_backend_targets_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
+              <div class="border-t border-slate-200/80 pt-5 dark:border-white/10">
+                <div class="space-y-1">
+                  <p class="px-3 pb-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Admin</p>
+                  <%= link_to "Users", admin_users_path, class: nav_link_classes %>
+                  <%= link_to "Projects", admin_projects_path, class: nav_link_classes %>
+                  <%= link_to "Applications", admin_project_applications_path, class: nav_link_classes %>
+                  <%= link_to "Build queue", admin_builds_path, class: nav_link_classes %>
+                  <%= link_to "Repositories", admin_repository_connections_path, class: nav_link_classes %>
+                  <%= link_to "Backend setup", admin_backend_targets_path, class: nav_link_classes %>
+                  <%= link_to "Build settings", docker_hosts_admin_build_integrations_path, class: nav_link_classes %>
+                </div>
+              </div>
             <% end %>
-            <%= link_to "My Account", account_path, class: "block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" %>
-            <a href="/up" class="block rounded-xl px-3 py-2.5 font-medium text-slate-700 transition hover:bg-fuchsia-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">Health</a>
           </nav>
         </aside>
 
@@ -101,7 +125,8 @@
       <header class="border-b border-slate-200/80 bg-white/80 backdrop-blur dark:border-white/10 dark:bg-slate-950/80">
         <nav class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <a href="/" class="flex items-center gap-3 text-sm font-semibold tracking-wide text-slate-900 dark:text-white">
-            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-blue-600 text-white shadow-lg shadow-fuchsia-500/20">↗</span>
+            <%# <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-blue-600 text-white shadow-lg shadow-fuchsia-500/20">↗</span> %>
+            <%= image_tag "/logo-header-48.png", alt: "Runway logo", class: "h-10 w-10 rounded-2xl object-cover shadow-lg shadow-fuchsia-500/20" %>
             <span>Runway</span>
           </a>
 

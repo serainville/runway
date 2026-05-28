@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resource :account, only: [:show]
   patch "account/password", to: "accounts#password", as: :account_password
   namespace :admin do
+    resources :builds, only: [:index, :show]
     resources :users, only: [:index, :update] do
       patch :reset_password, on: :member
     end
@@ -17,17 +18,53 @@ Rails.application.routes.draw do
     resources :backend_targets, only: [:index, :create, :update, :destroy] do
       patch :validate_connection, on: :member
     end
+    resources :build_integrations, only: [:index, :show, :edit, :create, :update, :destroy] do
+      collection do
+        get :docker_hosts
+        get :executors
+      end
+      patch :toggle_active, on: :member
+      patch :validate_connection, on: :member
+    end
   end
   resources :projects, only: [:index, :show, :new, :create] do
+    resource :settings, only: [:show, :update], controller: :project_settings
+    resources :memberships, only: [:index, :create, :update, :destroy], controller: :project_memberships do
+      collection do
+        get :search_users
+      end
+    end
     resources :repository_connections, only: [:index, :show, :create, :update, :destroy], controller: :project_repository_connections do
       patch :validate_connection, on: :member
     end
     resources :applications, only: [:index, :show, :new, :create], controller: :project_applications do
+      post :start_build, on: :member
+      patch :update_webhook, on: :member
+      patch :update_build_template, on: :member
+      get "events/:event_key", to: "project_application_events#show", on: :member, as: :event
       collection do
         get :discover_repositories
         post :verify_repository_access
       end
       resources :environments, only: [:show], controller: :application_environments
+      resources :builds, only: [:show], controller: :project_application_builds do
+        patch :cancel, on: :member
+      end
+    end
+  end
+
+  post "webhooks/:provider/:repository_connection_id", to: "webhooks/repository_events#create", as: :repository_webhook
+
+  namespace :internal do
+    post "build-executor/callbacks", to: "build_executor/callbacks#create"
+    post "build-executor/heartbeats", to: "build_executor/heartbeats#create"
+
+    namespace :builds do
+      post "worker/claim", to: "workers#claim"
+      post "worker/heartbeat", to: "workers#heartbeat"
+      post "worker/phase", to: "workers#phase"
+      post "worker/logs", to: "workers#logs"
+      post "worker/complete", to: "workers#complete"
     end
   end
 

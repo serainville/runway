@@ -67,7 +67,7 @@ module Admin
     private
 
     def repository_connection_params
-      params.require(:repository_connection).permit(:name, :provider, :endpoint_url, :auth_username, :auth_secret, :ca_bundle)
+      params.require(:repository_connection).permit(:name, :provider, :endpoint_url, :auth_username, :auth_secret, :webhook_secret, :ca_bundle)
     end
 
     def set_repository_connection

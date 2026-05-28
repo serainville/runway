@@ -1,0 +1,5 @@
+class AddBuildIntegrationToBuilds < ActiveRecord::Migration[8.0]
+  def change
+    add_reference :builds, :build_integration, foreign_key: true
+  end
+end

@@ -1,7 +1,7 @@
 class ProjectApplicationsController < ApplicationController
   before_action :require_current_user!
   before_action :set_project
-  before_action :set_application, only: :show
+  before_action :set_application, only: [:show, :start_build, :update_webhook, :update_build_template]
   before_action :set_runtime_options, only: [:new, :create]
   before_action :set_repository_connections, only: [:new, :create]
 
@@ -10,6 +10,71 @@ class ProjectApplicationsController < ApplicationController
   end
 
   def show
+    allowed_tabs = %w[overview repository build_history build_artifacts events]
+    @active_tab = params[:tab].to_s
+    @active_tab = "overview" unless allowed_tabs.include?(@active_tab)
+
+    @recent_builds = @application.builds.includes(:requested_by).order(created_at: :desc).limit(10)
+    @build_artifacts = @application
+      .builds
+      .where(status: "succeeded")
+      .where.not(artifact_reference: [nil, ""])
+      .order(created_at: :desc)
+      .limit(50)
+    @current_commit_sha = @application.current_commit_sha.presence || @application.builds.where.not(commit_sha: "manual").order(created_at: :desc).pick(:commit_sha)
+    @latest_build = @recent_builds.first
+    @application_events = Applications::ListEvents.call(application: @application, limit: 50)
+  end
+
+  def start_build
+    result = Applications::StartBuild.call(
+      actor: current_user,
+      project: @project,
+      application: @application,
+      params: start_build_params
+    )
+
+    if result.success?
+      redirect_to project_application_path(@project, @application), notice: "Build requested"
+    elsif result.error == :forbidden
+      head :forbidden
+    else
+      redirect_to project_application_path(@project, @application), alert: result.message
+    end
+  end
+
+  def update_webhook
+    result = Applications::UpdateWebhookSettings.call(
+      actor: current_user,
+      project: @project,
+      application: @application,
+      params: webhook_settings_params
+    )
+
+    if result.success?
+      redirect_to project_application_path(@project, @application), notice: "Webhook settings updated"
+    elsif result.error == :forbidden
+      head :forbidden
+    else
+      redirect_to project_application_path(@project, @application), alert: result.message
+    end
+  end
+
+  def update_build_template
+    result = Applications::UpdateBuildTemplate.call(
+      actor: current_user,
+      project: @project,
+      application: @application,
+      build_template: params[:build_template].to_s
+    )
+
+    if result.success?
+      redirect_to project_application_path(@project, @application, tab: "repository"), notice: "Build template updated"
+    elsif result.error == :forbidden
+      head :forbidden
+    else
+      render plain: result.message, status: :unprocessable_entity
+    end
   end
 
   def new
@@ -77,8 +142,8 @@ class ProjectApplicationsController < ApplicationController
   private
 
   def set_project
-    @project = current_user.projects.find_by(id: params[:project_id])
-    return if @project
+    @project = Project.find_by(id: params[:project_id])
+    return if @project && Projects::AuthorizeAccess.call(actor: current_user, project: @project, action: :read)
 
     head :forbidden
   end
@@ -104,6 +169,14 @@ class ProjectApplicationsController < ApplicationController
       repository_url: application_params[:repository_url],
       selected_repository_url: application_params[:selected_repository_url]
     }
+  end
+
+  def start_build_params
+    params.permit(:source_ref, :commit_sha)
+  end
+
+  def webhook_settings_params
+    params.require(:application).permit(:webhook_enabled, :webhook_event_policy, :webhook_branch_filter)
   end
 
   def set_runtime_options

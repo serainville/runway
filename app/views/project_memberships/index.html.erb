@@ -1,0 +1,109 @@
+<section class="space-y-6">
+  <div class="flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">Project Members</h1>
+      <p class="mt-2 text-slate-600 dark:text-slate-300">Manage access roles for <%= @project.name %>.</p>
+    </div>
+    <%= link_to "Back to project", project_path(@project), class: "rounded-full border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/10" %>
+  </div>
+
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <h2 class="text-base font-semibold text-slate-900 dark:text-white">Add member</h2>
+    <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Type a username and assign a role.</p>
+
+    <%= form_with model: [@project, ProjectMembership.new], url: project_memberships_path(@project), local: true, class: "mt-4 grid gap-3 sm:grid-cols-[1fr_15rem_auto]" do |form| %>
+      <div>
+        <%= form.text_field :username,
+                            placeholder: "Username",
+                            required: true,
+                            list: "project-membership-user-search",
+                            data: { user_search_input: true, user_search_url: search_users_project_memberships_path(@project) },
+                            class: "w-full rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+        <datalist id="project-membership-user-search"></datalist>
+      </div>
+      <div>
+        <%= form.select :role,
+                        ProjectMembership::ROLES.map { |role| [role.titleize, role] },
+                        { selected: "contributor" },
+                        class: "w-full rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+      </div>
+      <div>
+        <%= form.submit "Add", class: "rounded-full bg-fuchsia-600 px-5 py-2 text-sm font-medium text-white" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <table class="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-white/10">
+      <thead class="bg-slate-50 dark:bg-white/5">
+        <tr>
+          <th class="px-4 py-3">User</th>
+          <th class="px-4 py-3">Username</th>
+          <th class="px-4 py-3">Role</th>
+          <th class="px-4 py-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200 dark:divide-white/10">
+        <% @project_memberships.each do |membership| %>
+          <tr>
+            <td class="px-4 py-3"><%= membership.user.name %></td>
+            <td class="px-4 py-3 text-slate-600 dark:text-slate-300"><%= membership.user.username %></td>
+            <td class="px-4 py-3">
+              <%= form_with model: [@project, membership], url: project_membership_path(@project, membership), method: :patch, local: true, class: "inline-flex gap-2" do |form| %>
+                <%= form.select :role,
+                                ProjectMembership::ROLES.map { |role| [role.titleize, role] },
+                                { selected: membership.role },
+                                class: "rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm dark:border-white/10 dark:bg-slate-950/60" %>
+                <%= form.submit "Save", class: "rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700 dark:border-white/10 dark:text-slate-200" %>
+              <% end %>
+            </td>
+            <td class="px-4 py-3">
+              <%= button_to "Remove",
+                            project_membership_path(@project, membership),
+                            method: :delete,
+                            class: "rounded-full border border-rose-300 px-3 py-1 text-xs font-medium text-rose-700 dark:border-rose-400/30 dark:text-rose-300" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const input = document.querySelector("[data-user-search-input]")
+    if (!input) return
+
+    const datalist = document.getElementById("project-membership-user-search")
+    const endpoint = input.dataset.userSearchUrl
+    let abortController = null
+
+    input.addEventListener("input", async () => {
+      const query = input.value.trim()
+      if (query.length < 2) {
+        datalist.innerHTML = ""
+        return
+      }
+
+      if (abortController) abortController.abort()
+      abortController = new AbortController()
+
+      try {
+        const response = await fetch(`${endpoint}?query=${encodeURIComponent(query)}`, {
+          headers: { "Accept": "application/json" },
+          signal: abortController.signal
+        })
+        if (!response.ok) return
+
+        const payload = await response.json()
+        const options = (payload.users || []).slice(0, 6)
+
+        datalist.innerHTML = options
+          .map((user) => `<option value="${user.username}">${user.name || user.username}</option>`)
+          .join("")
+      } catch (_error) {
+      }
+    })
+  })()
+</script>

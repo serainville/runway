@@ -49,6 +49,7 @@ module RepositoryConnections
         validation_status: "pending"
       }
       attrs[:auth_secret_ciphertext] = RepositoryConnections::CredentialCipher.encrypt(params[:auth_secret]) if params[:auth_secret].present?
+      attrs[:webhook_secret_ciphertext] = RepositoryConnections::CredentialCipher.encrypt(params[:webhook_secret]) if params[:webhook_secret].present?
       attrs
     end
 
@@ -60,7 +61,7 @@ module RepositoryConnections
       return actor&.admin? if repository_connection.global?
       return false unless repository_connection.project?
 
-      ProjectMembership.exists?(project_id: repository_connection.project_id, user_id: actor&.id, role: "owner")
+      Projects::AuthorizeAccess.call(actor: actor, project: repository_connection.project, action: :manage_settings)
     end
   end
 end

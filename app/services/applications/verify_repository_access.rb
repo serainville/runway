@@ -65,7 +65,7 @@ module Applications
     attr_reader :actor, :project, :repository_connection_id, :repository_input_mode, :repository_url, :selected_repository_url, :verifier, :available_connections
 
     def authorized?
-      project && ProjectMembership.exists?(project_id: project.id, user_id: actor.id)
+      Projects::AuthorizeAccess.call(actor: actor, project: project, action: :initiate_build)
     end
 
     def selected_repository_connection(resolved_repository_url)

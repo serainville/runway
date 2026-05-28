@@ -18,7 +18,17 @@ module DeploymentTargets
 
     def call
       return forbidden unless actor&.admin?
-      return unsupported_backend unless backend_target.kubernetes?
+
+      return validate_kubernetes if backend_target.kubernetes?
+
+      unsupported_backend
+    end
+
+    private
+
+    attr_reader :actor, :backend_target, :access_validator
+
+    def validate_kubernetes
 
       access_result = access_validator.call(
         endpoint: backend_target.endpoint,
@@ -35,10 +45,6 @@ module DeploymentTargets
         Result.new(success?: false, error: access_result.error, message: access_result.message)
       end
     end
-
-    private
-
-    attr_reader :actor, :backend_target, :access_validator
 
     def mark_validation_failed
       backend_target.update!(validation_status: "validation_failed")
@@ -65,7 +71,7 @@ module DeploymentTargets
     end
 
     def unsupported_backend
-      Result.new(success?: false, error: :unsupported_backend, message: "Validation is only supported for kubernetes backends")
+      Result.new(success?: false, error: :unsupported_backend, message: "Validation is only supported for configured backend integrations")
     end
   end
 end

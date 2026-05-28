@@ -1,0 +1,25 @@
+<section class="space-y-6">
+  <div class="flex items-start justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">Project settings</h1>
+      <p class="mt-2 text-slate-600 dark:text-slate-300">Manage visibility and project-level administration for <%= @project.name %>.</p>
+    </div>
+    <%= link_to "Back to project", project_path(@project), class: "rounded-full border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/10" %>
+  </div>
+
+  <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Visibility</h2>
+    <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Public projects are readable by all signed-in users. Private projects are restricted to members.</p>
+
+    <%= form_with model: @project, url: project_settings_path(@project), method: :patch, local: true, class: "mt-5 space-y-4" do |form| %>
+      <label class="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
+        <%= form.check_box :public, class: "h-4 w-4 rounded border-slate-300 text-fuchsia-600 focus:ring-fuchsia-500" %>
+        <span>Public project (authenticated read-only default)</span>
+      </label>
+
+      <div>
+        <%= form.submit "Save settings", class: "rounded-full bg-fuchsia-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-fuchsia-500" %>
+      </div>
+    <% end %>
+  </div>
+</section>

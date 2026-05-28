@@ -73,6 +73,20 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  test "allows access to public project details without membership" do
+    post session_url, params: {
+      session: {
+        username: users(:two).username,
+        password: "password123"
+      }
+    }
+
+    get project_url(projects(:public_one))
+
+    assert_response :success
+    assert_includes response.body, projects(:public_one).name
+  end
+
   test "renders the project creation form" do
     post session_url, params: {
       session: {

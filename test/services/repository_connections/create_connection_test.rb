@@ -34,12 +34,14 @@ class RepositoryConnectionsCreateConnectionTest < ActiveSupport::TestCase
           provider: "gitlab",
           endpoint_url: "https://gitlab.example.com",
           auth_username: "oauth2",
-          auth_secret: "super-secret-token"
+          auth_secret: "super-secret-token",
+          webhook_secret: "webhook-secret"
         }
       )
 
       assert result.success?
       assert_equal projects(:one), result.repository_connection.project
+      assert_equal "webhook-secret", result.repository_connection.webhook_secret
     end
   end
 

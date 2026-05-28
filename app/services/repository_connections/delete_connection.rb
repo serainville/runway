@@ -44,7 +44,7 @@ module RepositoryConnections
       return actor&.admin? if repository_connection.global?
       return false unless repository_connection.project?
 
-      ProjectMembership.exists?(project_id: repository_connection.project_id, user_id: actor&.id, role: "owner")
+      Projects::AuthorizeAccess.call(actor: actor, project: repository_connection.project, action: :manage_settings)
     end
   end
 end

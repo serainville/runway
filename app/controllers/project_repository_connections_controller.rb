@@ -77,14 +77,14 @@ class ProjectRepositoryConnectionsController < ApplicationController
   private
 
   def set_project
-    @project = current_user.projects.find_by(id: params[:project_id])
-    return if @project
+    @project = Project.find_by(id: params[:project_id])
+    return if @project && Projects::AuthorizeAccess.call(actor: current_user, project: @project, action: :manage_settings)
 
     head :forbidden
   end
 
   def repository_connection_params
-    params.require(:repository_connection).permit(:name, :provider, :endpoint_url, :auth_username, :auth_secret, :ca_bundle)
+    params.require(:repository_connection).permit(:name, :provider, :endpoint_url, :auth_username, :auth_secret, :webhook_secret, :ca_bundle)
   end
 
   def set_repository_connection

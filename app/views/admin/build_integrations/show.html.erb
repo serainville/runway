@@ -1,0 +1,136 @@
+<section class="space-y-8">
+  <div>
+    <h1 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">Executor Details</h1>
+    <p class="mt-2 text-slate-600 dark:text-slate-300">Review executor registration health, current activity, and recent callback events.</p>
+  </div>
+
+  <%= render "build_settings_nav" %>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+      <h2 class="text-lg font-semibold">Registration</h2>
+      <dl class="mt-4 space-y-3 text-sm">
+        <div><dt class="text-slate-500 dark:text-slate-400">Name</dt><dd class="font-medium text-slate-900 dark:text-white"><%= @build_integration.name %></dd></div>
+        <div><dt class="text-slate-500 dark:text-slate-400">Endpoint</dt><dd class="font-medium text-slate-900 dark:text-white"><%= @build_integration.endpoint %></dd></div>
+        <div><dt class="text-slate-500 dark:text-slate-400">Activation</dt><dd class="font-medium text-slate-900 dark:text-white"><%= executor_activation_badge(@build_integration) %></dd></div>
+        <div><dt class="text-slate-500 dark:text-slate-400">Status</dt><dd class="font-medium text-slate-900 dark:text-white"><%= executor_registration_status_badge(@build_integration) %></dd></div>
+        <div><dt class="text-slate-500 dark:text-slate-400">Last heartbeat</dt><dd class="font-medium text-slate-900 dark:text-white"><%= @build_integration.last_heartbeat_at ? @build_integration.last_heartbeat_at.in_time_zone.strftime("%Y-%m-%d %H:%M:%S %Z") : "Never" %></dd></div>
+      </dl>
+      <div class="mt-4 flex items-center gap-2">
+        <%= link_to "Modify", edit_admin_build_integration_path(@build_integration), class: "rounded-full bg-fuchsia-600 px-4 py-2 text-sm font-medium text-white" %>
+        <%= form_with url: toggle_active_admin_build_integration_path(@build_integration), method: :patch, local: true, class: "inline" do %>
+          <% active = @build_integration.active? %>
+          <%= button_tag type: "submit",
+                         role: "switch",
+                         "aria-checked": active.to_s,
+                         "aria-label": "Toggle executor active state",
+                         style: "position: relative; display: inline-flex; align-items: center; width: 64px; height: 32px; border-radius: 9999px; border: 1px solid #{active ? '#24b39c' : '#a8adb4'}; background: #{active ? '#2ec4a6' : '#c8ccd1'}; padding: 0;" do %>
+            <span style="position: absolute; left: 10px; font-size: 12px; font-weight: 700; color: white; opacity: <%= active ? 1 : 0 %>;">ON</span>
+            <span style="position: absolute; right: 9px; font-size: 12px; font-weight: 700; color: white; opacity: <%= active ? 0 : 1 %>;">OFF</span>
+            <span style="position: absolute; top: 1px; left: <%= active ? 33 : 1 %>px; width: 28px; height: 28px; border-radius: 9999px; background: #ffffff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);"></span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+      <h2 class="text-lg font-semibold">Current activity</h2>
+      <p class="mt-3 text-sm text-slate-700 dark:text-slate-300">
+        <span class="font-medium"><%= @details.active_builds.size %></span>
+        build(s) currently in progress.
+      </p>
+      <% if @details.active_builds.any? %>
+        <ul class="mt-3 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+          <% @details.active_builds.each do |build| %>
+            <li>
+              Build #<%= build.id %> for <%= build.application.name %> (<%= build.status %>)
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">No active work right now.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <h2 class="text-lg font-semibold">Recent executor activity</h2>
+    <% if @details.recent_events.any? %>
+      <div class="mt-4 overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-white/10">
+          <thead class="bg-slate-50 dark:bg-white/5">
+            <tr>
+              <th class="px-3 py-2">Build</th>
+              <th class="px-3 py-2">Phase</th>
+              <th class="px-3 py-2">Status</th>
+              <th class="px-3 py-2">Message</th>
+              <th class="px-3 py-2">Reported</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 dark:divide-white/10">
+            <% @details.recent_events.each do |event| %>
+              <tr>
+                <td class="px-3 py-2">#<%= event.build_id %></td>
+                <td class="px-3 py-2"><%= event.phase %></td>
+                <td class="px-3 py-2"><%= event.status %></td>
+                <td class="px-3 py-2"><%= event.message.presence || "-" %></td>
+                <td class="px-3 py-2"><%= event.reported_at.in_time_zone.strftime("%Y-%m-%d %H:%M:%S %Z") %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">No recent activity recorded.</p>
+    <% end %>
+  </div>
+
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <h2 class="text-lg font-semibold">Recent dispatch requests</h2>
+    <% if @details.recent_dispatch_requests.any? %>
+      <div class="mt-4 overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-white/10">
+          <thead class="bg-slate-50 dark:bg-white/5">
+            <tr>
+              <th class="px-3 py-2">Build</th>
+              <th class="px-3 py-2">Request</th>
+              <th class="px-3 py-2">HTTP status</th>
+              <th class="px-3 py-2">Duration</th>
+              <th class="px-3 py-2">Outcome</th>
+              <th class="px-3 py-2">Reported</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 dark:divide-white/10">
+            <% @details.recent_dispatch_requests.each do |event| %>
+              <tr>
+                <td class="px-3 py-2">#<%= event.build_id %></td>
+                <td class="px-3 py-2"><%= event.request_method %> <%= event.request_path %></td>
+                <td class="px-3 py-2"><%= event.response_status_code %></td>
+                <td class="px-3 py-2"><%= event.duration_ms.present? ? "#{event.duration_ms} ms" : "-" %></td>
+                <td class="px-3 py-2"><%= event.success ? "Success" : "Failed" %></td>
+                <td class="px-3 py-2"><%= event.created_at.in_time_zone.strftime("%Y-%m-%d %H:%M:%S %Z") %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">No dispatch request telemetry has been recorded yet.</p>
+    <% end %>
+  </div>
+
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <h2 class="text-lg font-semibold">Recent builds</h2>
+    <% if @details.recent_builds.any? %>
+      <ul class="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+        <% @details.recent_builds.each do |build| %>
+          <li>
+            Build #<%= build.id %> - <%= build.application.name %> - <%= build.status %> - <%= build.created_at.in_time_zone.strftime("%Y-%m-%d %H:%M:%S %Z") %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">No builds have been routed through this executor yet.</p>
+    <% end %>
+  </div>
+</section>

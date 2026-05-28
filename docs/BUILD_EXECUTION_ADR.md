@@ -159,3 +159,7 @@ Adopt delegated execution when one or more of the following become true:
 
 ## Related Document
 Operator-facing executor configuration details are defined in `docs/BUILD_EXECUTOR_OPERATOR_CONFIG.md`.
+
+Worker-to-control-plane protocol details are defined in `docs/BUILD_WORKER_PROTOCOL.md`.
+
+Implementation ticket breakdown is defined in `docs/BUILD_IMPLEMENTATION_TICKETS.md`.

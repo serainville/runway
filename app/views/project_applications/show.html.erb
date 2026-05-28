@@ -7,7 +7,23 @@
         <p class="mt-3 max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300"><%= @application.description %></p>
       </div>
 
-      <span class="inline-flex rounded-full border px-3 py-1 text-xs font-medium <%= application_state_badge_classes(@application) %>"><%= application_state(@application) %></span>
+      <% if can_initiate_build_for_project?(@project) %>
+        <%= button_to "Start build",
+                      start_build_project_application_path(@project, @application),
+                      method: :post,
+                      params: { source_ref: "main" },
+                      class: "rounded-full bg-fuchsia-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-fuchsia-500" %>
+      <% end %>
+
+      <div class="space-y-2">
+        <span class="inline-flex rounded-full border px-3 py-1 text-xs font-medium <%= application_state_badge_classes(@application) %>"><%= application_state(@application) %></span>
+        <% if @latest_build %>
+          <div class="mt-1 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium <%= build_status_badge_classes(@latest_build.status) %>">
+            <%= build_status_icon(@latest_build.status) %>
+            <span>Build</span>
+          </div>
+        <% end %>
+      </div>
     </div>
 
     <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -26,8 +42,47 @@
     </div>
   </div>
 
-  <% if @application.repository_connection %>
-    <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+  <div class="border-b border-slate-200 dark:border-white/10">
+    <nav class="flex flex-wrap gap-2" aria-label="Application sections">
+      <% tabs = [["Overview", "overview"], ["Repository", "repository"], ["Build History", "build_history"], ["Build Artifacts", "build_artifacts"], ["Application Events", "events"]] %>
+      <% tabs.each do |label, value| %>
+        <% active = (@active_tab == value) %>
+        <%= link_to label,
+                    project_application_path(@project, @application, tab: value),
+                    class: "rounded-t-2xl border px-4 py-2 text-sm font-medium transition #{active ? 'border-slate-300 bg-white text-slate-900 dark:border-white/20 dark:bg-slate-900 dark:text-white' : 'border-transparent bg-slate-100 text-slate-600 hover:text-slate-900 dark:bg-slate-950/60 dark:text-slate-300 dark:hover:text-white'}" %>
+      <% end %>
+    </nav>
+  </div>
+
+  <% if @active_tab == "overview" %>
+    <% if @application.environments.any? %>
+      <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Environments</h2>
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
+          <% @application.environments.order(:name).each do |environment| %>
+            <%= link_to project_application_environment_path(@project, @application, environment), class: "rounded-2xl border border-slate-200 bg-slate-50 p-5 transition hover:border-fuchsia-300 hover:bg-fuchsia-50 dark:border-white/10 dark:bg-slate-950/70 dark:hover:border-fuchsia-400/30 dark:hover:bg-slate-900" do %>
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="font-semibold text-slate-900 dark:text-white"><%= environment.name %></div>
+                  <div class="mt-1 text-sm text-slate-500 dark:text-slate-400"><%= environment.deployment_target.name %></div>
+                </div>
+                <% if environment.default? %>
+                  <span class="rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-500/10 dark:text-emerald-200">default</span>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Environments</h2>
+        <p class="mt-4 text-sm text-slate-600 dark:text-slate-300">No environments configured for this application yet.</p>
+      </div>
+    <% end %>
+  <% elsif @active_tab == "repository" %>
+    <% if @application.repository_connection %>
+      <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
       <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Repository</h2>
       <div class="mt-4 grid gap-4 text-sm sm:grid-cols-3">
         <div>
@@ -42,28 +97,223 @@
           <div class="text-slate-500 dark:text-slate-400">Connection endpoint</div>
           <div class="mt-1 break-all font-medium text-slate-900 dark:text-white"><%= @application.repository_connection.endpoint_url %></div>
         </div>
+        <div>
+          <div class="text-slate-500 dark:text-slate-400">Current commit hash</div>
+          <div class="mt-1 break-all font-mono font-medium text-slate-900 dark:text-white"><%= @current_commit_sha.presence || "Not available yet" %></div>
+        </div>
       </div>
-    </div>
-  <% end %>
 
-  <% if @application.environments.any? %>
-    <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
-      <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Environments</h2>
-      <div class="mt-4 grid gap-4 md:grid-cols-2">
-        <% @application.environments.order(:name).each do |environment| %>
-          <%= link_to project_application_environment_path(@project, @application, environment), class: "rounded-2xl border border-slate-200 bg-slate-50 p-5 transition hover:border-fuchsia-300 hover:bg-fuchsia-50 dark:border-white/10 dark:bg-slate-950/70 dark:hover:border-fuchsia-400/30 dark:hover:bg-slate-900" do %>
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <div class="font-semibold text-slate-900 dark:text-white"><%= environment.name %></div>
-                <div class="mt-1 text-sm text-slate-500 dark:text-slate-400"><%= environment.deployment_target.name %></div>
-              </div>
-              <% if environment.default? %>
-                <span class="rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-500/10 dark:text-emerald-200">default</span>
-              <% end %>
+      <div class="mt-6 border-t border-slate-200 pt-6 dark:border-white/10">
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Webhook Automation</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Configure which repository events can trigger builds for this application.</p>
+
+        <% if can_manage_project_settings?(@project) %>
+          <%= form_with model: [@project, @application], url: update_webhook_project_application_path(@project, @application), method: :patch, local: true, class: "mt-4 grid gap-3 sm:grid-cols-2" do |form| %>
+            <label class="sm:col-span-2 inline-flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+              <%= form.check_box :webhook_enabled, { checked: @application.webhook_enabled, class: "h-4 w-4 rounded border-slate-300 text-fuchsia-600 focus:ring-fuchsia-500" }, true, false %>
+              Enable webhook-triggered builds
+            </label>
+
+            <div>
+              <%= form.label :webhook_event_policy, "Event policy", class: "block text-sm font-medium text-slate-700 dark:text-slate-200" %>
+              <%= form.select :webhook_event_policy,
+                              [["Merge events only", "merge_only"], ["Merge and push events", "merge_and_push"]],
+                              { selected: @application.webhook_event_policy },
+                              class: "mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+            </div>
+
+            <div>
+              <%= form.label :webhook_branch_filter, "Branch filter", class: "block text-sm font-medium text-slate-700 dark:text-slate-200" %>
+              <%= form.text_field :webhook_branch_filter,
+                                  value: @application.webhook_branch_filter,
+                                  placeholder: "main (blank = any branch)",
+                                  class: "mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-slate-950/60" %>
+            </div>
+
+            <div class="sm:col-span-2">
+              <%= form.submit "Save webhook settings", class: "rounded-full bg-fuchsia-600 px-5 py-2 text-sm font-medium text-white" %>
             </div>
           <% end %>
+        <% else %>
+          <div class="mt-4 grid gap-4 text-sm sm:grid-cols-3">
+            <div>
+              <div class="text-slate-500 dark:text-slate-400">Webhook builds</div>
+              <div class="mt-1 font-medium text-slate-900 dark:text-white"><%= @application.webhook_enabled ? "Enabled" : "Disabled" %></div>
+            </div>
+            <div>
+              <div class="text-slate-500 dark:text-slate-400">Event policy</div>
+              <div class="mt-1 font-medium text-slate-900 dark:text-white"><%= @application.webhook_event_policy.humanize %></div>
+            </div>
+            <div>
+              <div class="text-slate-500 dark:text-slate-400">Branch filter</div>
+              <div class="mt-1 font-medium text-slate-900 dark:text-white"><%= @application.webhook_branch_filter.presence || "Any branch" %></div>
+            </div>
+          </div>
+        <% end %>
+      <div class="mt-6 border-t border-slate-200 pt-6 dark:border-white/10">
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Build template</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Choose how your application is built into a container image.</p>
+
+        <% if can_manage_project_settings?(@project) %>
+          <%= form_with url: update_build_template_project_application_path(@project, @application), method: :patch, local: true, class: "mt-4 space-y-3" do |form| %>
+            <div class="flex flex-col gap-2">
+              <label class="inline-flex items-start gap-3 text-sm text-slate-700 dark:text-slate-200">
+                <%= radio_button_tag :build_template, "buildkit", @application.build_template == "buildkit", class: "mt-0.5 h-4 w-4 border-slate-300 text-fuchsia-600 focus:ring-fuchsia-500" %>
+                <span>
+                  <span class="font-medium">Dockerfile (BuildKit)</span><br>
+                  <span class="text-xs text-slate-500 dark:text-slate-400">Builds using the Dockerfile at your repository root. Fast and familiar.</span>
+                </span>
+              </label>
+              <label class="inline-flex items-start gap-3 text-sm text-slate-700 dark:text-slate-200">
+                <%= radio_button_tag :build_template, "buildpacks", @application.build_template == "buildpacks", class: "mt-0.5 h-4 w-4 border-slate-300 text-fuchsia-600 focus:ring-fuchsia-500" %>
+                <span>
+                  <span class="font-medium">Buildpacks (auto-detect)</span><br>
+                  <span class="text-xs text-slate-500 dark:text-slate-400">No Dockerfile needed. Runway detects your runtime and builds a production-ready image automatically.</span>
+                </span>
+              </label>
+            </div>
+            <div>
+              <%= form.submit "Save build template", class: "rounded-full bg-fuchsia-600 px-5 py-2 text-sm font-medium text-white" %>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="mt-4 text-sm">
+            <div class="text-slate-500 dark:text-slate-400">Current template</div>
+            <div class="mt-1 font-medium text-slate-900 dark:text-white">
+              <%= @application.build_template == "buildpacks" ? "Buildpacks (auto-detect)" : "Dockerfile (BuildKit)" %>
+            </div>
+          </div>
         <% end %>
       </div>
+      </div>
+    <% else %>
+      <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Repository</h2>
+        <p class="mt-4 text-sm text-slate-600 dark:text-slate-300">No repository is connected to this application yet.</p>
+      </div>
+    <% end %>
+  <% elsif @active_tab == "build_history" %>
+    <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-white/10 dark:bg-slate-900/70"
+      data-controller="auto-refresh"
+      data-auto-refresh-enabled-value="<%= @recent_builds.any? { |build| %w[pending running].include?(build.status) } %>"
+      data-auto-refresh-interval-value="5000">
+    <div class="flex items-center justify-between gap-4">
+      <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Build history</h2>
+      <% if (latest_build = @recent_builds.first) %>
+        <span class="rounded-full border px-3 py-1 text-xs font-medium <%= build_status_badge_classes(latest_build.status) %>">
+          Latest: <%= build_status_with_icon(latest_build.status) %>
+        </span>
+      <% end %>
+    </div>
+    <p class="mt-2 text-xs text-slate-500 dark:text-slate-400" data-auto-refresh-target="label"></p>
+
+    <% if @recent_builds.any? %>
+      <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-white/10">
+          <thead class="bg-slate-50 dark:bg-white/5">
+            <tr>
+              <th class="px-4 py-3">Build</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3">Source</th>
+              <th class="px-4 py-3">Requested by</th>
+              <th class="px-4 py-3">Requested at</th>
+              <th class="px-4 py-3">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 dark:divide-white/10">
+            <% @recent_builds.each do |build| %>
+              <tr>
+                <td class="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                  <%= link_to "##{build.id}", project_application_build_path(@project, @application, build), class: "underline decoration-dotted underline-offset-2" %>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="rounded-full border px-2.5 py-1 text-xs font-medium <%= build_status_badge_classes(build.status) %>"><%= build_status_with_icon(build.status) %></span>
+                </td>
+                <td class="px-4 py-3 text-slate-700 dark:text-slate-300"><%= build.source_ref %>@<%= build.commit_sha %></td>
+                <td class="px-4 py-3 text-slate-700 dark:text-slate-300"><%= build.requested_by.username %></td>
+                <td class="px-4 py-3 text-slate-700 dark:text-slate-300"><%= build.created_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">
+                  <div class="flex items-center gap-2">
+                    <%= link_to "Build details", project_application_build_path(@project, @application, build), class: "rounded-full bg-slate-100 px-3 py-1 text-xs font-medium dark:bg-slate-800" %>
+                    <% if %w[pending running].include?(build.status) && can_initiate_build_for_project?(@project) %>
+                      <%= button_to "Cancel",
+                                    cancel_project_application_build_path(@project, @application, build),
+                                    method: :patch,
+                                    form: { data: { turbo_confirm: "Cancel this running build?" } },
+                                    class: "rounded-full bg-rose-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-rose-500" %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="mt-4 text-sm text-slate-600 dark:text-slate-300">No builds yet. Start a build to see status updates here.</p>
+    <% end %>
+    </div>
+  <% elsif @active_tab == "build_artifacts" %>
+    <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+      <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Build artifacts</h2>
+      <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Published container images from successful builds.</p>
+
+      <% if @build_artifacts.any? %>
+        <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10">
+          <table class="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-white/10">
+            <thead class="bg-slate-50 dark:bg-white/5">
+              <tr>
+                <th class="px-4 py-3">Repository URL</th>
+                <th class="px-4 py-3">Image</th>
+                <th class="px-4 py-3">Tag / Hash</th>
+                <th class="px-4 py-3">Build date</th>
+                <th class="px-4 py-3">Commit hash</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-white/10">
+              <% @build_artifacts.each do |build| %>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-slate-700 dark:text-slate-300"><%= build.container_repository_url.presence || "Not available" %></td>
+                  <td class="px-4 py-3 font-mono font-medium text-slate-900 dark:text-white"><%= build.container_image_name.presence || "Not available" %></td>
+                  <td class="px-4 py-3 font-mono text-slate-700 dark:text-slate-300"><%= build.container_tag_or_hash.presence || "Not available" %></td>
+                  <td class="px-4 py-3 text-slate-700 dark:text-slate-300">
+                    <%= link_to (build.finished_at || build.created_at).strftime("%Y-%m-%d %H:%M:%S"),
+                                project_application_build_path(@project, @application, build),
+                                class: "underline decoration-dotted underline-offset-2" %>
+                  </td>
+                  <td class="px-4 py-3 font-mono text-slate-700 dark:text-slate-300"><%= build.commit_sha %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="mt-4 text-sm text-slate-600 dark:text-slate-300">No build artifacts yet. Run a successful build to publish an image artifact.</p>
+      <% end %>
+    </div>
+  <% elsif @active_tab == "events" %>
+    <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+    <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Application events</h2>
+    <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Recent application activity including webhook processing, build requests, and status changes.</p>
+
+    <% if @application_events.any? %>
+      <ul class="mt-4 space-y-2">
+        <% @application_events.each do |event| %>
+          <li>
+            <%= link_to event_project_application_path(@project, @application, event.event_key),
+                        class: "block rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-fuchsia-300 hover:bg-fuchsia-50 dark:border-white/10 dark:bg-slate-950/70 dark:hover:border-fuchsia-400/30 dark:hover:bg-slate-900" do %>
+              <div class="grid gap-2 sm:grid-cols-3 sm:items-center">
+                <div class="font-medium text-slate-900 dark:text-white"><%= event.title %></div>
+                <div class="text-sm text-slate-700 dark:text-slate-300"><%= event.triggered_by %></div>
+                <div class="text-sm text-slate-600 dark:text-slate-400 sm:text-right"><%= event.occurred_at.strftime("%Y-%m-%d %H:%M:%S") %></div>
+              </div>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="mt-4 text-sm text-slate-600 dark:text-slate-300">No application events yet.</p>
+    <% end %>
     </div>
   <% end %>
 </section>

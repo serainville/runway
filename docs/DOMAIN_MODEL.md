@@ -34,6 +34,19 @@ ClusterCredential
 - Release belongs to Build when created from source.
 - Environment belongs to DeploymentTarget.
 
+## Project access model
+
+- User has many ProjectMemberships.
+- Project has many ProjectMemberships.
+- ProjectMembership role is one of:
+	- owner
+	- contributor
+	- reviewer
+- A user can belong to multiple projects.
+- A project can be private or public.
+- Public projects are read-only by default for authenticated users who are not members.
+- Private projects require explicit membership for access.
+
 ## Release rules
 
 A Release is immutable and references:

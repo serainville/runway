@@ -1,0 +1,59 @@
+<% problematic_integrations = @build_integrations.select do |integration|
+     integration.active? && !integration.ready_for_executor_dispatch?
+   end %>
+
+<% if problematic_integrations.any? %>
+  <div class="mb-4 rounded-2xl border border-amber-300 bg-amber-100 p-4 text-amber-800 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200">
+    <p class="text-sm font-semibold">Warning: Some active executor registrations are not ready for dispatch.</p>
+    <p class="mt-1 text-xs">Builds will fall back to the default Docker host unless an executor is both validated and online.</p>
+    <p class="mt-2 text-xs">
+      <%= problematic_integrations.map { |integration| "#{integration.name} (#{integration.validation_status}, #{integration.executor_heartbeat_status})" }.join(", ") %>
+    </p>
+  </div>
+<% end %>
+
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+  <table class="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-white/10">
+    <thead class="bg-slate-50 dark:bg-white/5">
+      <tr>
+        <th class="px-4 py-3">Name</th>
+        <th class="px-4 py-3">Endpoint</th>
+        <th class="px-4 py-3">Activation</th>
+        <th class="px-4 py-3">Status</th>
+        <th class="px-4 py-3">Last heartbeat</th>
+        <th class="px-4 py-3">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-200 dark:divide-white/10">
+      <% @build_integrations.each do |integration| %>
+        <tr>
+          <td class="px-4 py-3">
+            <%= link_to integration.name, admin_build_integration_path(integration), class: "font-medium text-slate-900 underline decoration-dotted underline-offset-2 dark:text-white", data: { turbo_frame: "_top" } %>
+          </td>
+          <td class="px-4 py-3"><%= integration.endpoint %></td>
+          <td class="px-4 py-3"><%= executor_activation_badge(integration) %></td>
+          <td class="px-4 py-3"><%= executor_registration_status_badge(integration) %></td>
+          <td class="px-4 py-3"><%= integration.last_heartbeat_at ? integration.last_heartbeat_at.in_time_zone.strftime("%Y-%m-%d %H:%M:%S %Z") : "Never" %></td>
+          <td class="px-4 py-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <%= link_to "Modify", edit_admin_build_integration_path(integration), class: "rounded-full bg-fuchsia-600 px-3 py-1 text-xs font-medium text-white", data: { turbo_frame: "_top" } %>
+              <%= form_with url: toggle_active_admin_build_integration_path(integration), method: :patch, local: true, data: { turbo_frame: "_top" }, class: "inline" do %>
+                <% active = integration.active? %>
+                <%= button_tag type: "submit",
+                               role: "switch",
+                               "aria-checked": active.to_s,
+                               "aria-label": "Toggle executor active state",
+                               style: "position: relative; display: inline-flex; align-items: center; width: 56px; height: 28px; border-radius: 9999px; border: 1px solid #{active ? '#24b39c' : '#a8adb4'}; background: #{active ? '#2ec4a6' : '#c8ccd1'}; padding: 0;" do %>
+                  <span style="position: absolute; left: 9px; font-size: 12px; font-weight: 700; color: white; opacity: <%= active ? 1 : 0 %>;">ON</span>
+                  <span style="position: absolute; right: 8px; font-size: 12px; font-weight: 700; color: white; opacity: <%= active ? 0 : 1 %>;">OFF</span>
+                  <span style="position: absolute; top: 1px; left: <%= active ? 29 : 1 %>px; width: 24px; height: 24px; border-radius: 9999px; background: #ffffff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);"></span>
+                <% end %>
+              <% end %>
+              <%= button_to "Delete", admin_build_integration_path(integration), method: :delete, data: { turbo_confirm: "Delete this executor registration?" }, class: "rounded-full bg-rose-600 px-3 py-1 text-xs font-medium text-white", form: { data: { turbo_frame: "_top" } } %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
