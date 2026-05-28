@@ -2,6 +2,9 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
+require_relative "../lib/executor/env_loader"
+
+Executor::EnvLoader.load!
 
 host = ENV.fetch("EXECUTOR_BIND_ADDRESS", "0.0.0.0")
 port = Integer(ENV.fetch("EXECUTOR_PORT", "4100"), 10)

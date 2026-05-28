@@ -37,6 +37,10 @@ class RepositoryConnection < ApplicationRecord
     RepositoryConnections::CredentialCipher.decrypt(auth_secret_ciphertext)
   end
 
+  def webhook_secret
+    RepositoryConnections::CredentialCipher.decrypt(webhook_secret_ciphertext)
+  end
+
   private
 
   def validate_endpoint_url

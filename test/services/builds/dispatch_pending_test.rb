@@ -249,7 +249,9 @@ class BuildsDispatchPendingTest < ActiveSupport::TestCase
       name: "executor-dispatch-nonp",
       integration_type: "executor_registration",
       endpoint: "http://127.0.0.1:4100",
-      active: true
+        validation_status: "pending",
+      active: true,
+      last_heartbeat_at: Time.current
     )
 
     application = Application.create!(
@@ -289,5 +291,55 @@ class BuildsDispatchPendingTest < ActiveSupport::TestCase
     assert_equal executor_integration.id, FakeExecutorDispatcherSuccess.last_integration_id
     assert_equal 1, updated.build_host_request_events.count
     assert_equal "Build command accepted by executor executor-dispatch-nonp", updated.build_phase_events.order(:created_at).last.message
+  end
+
+  test "falls back to default docker host when executor registration is stale or unvalidated" do
+    BuildIntegration.create!(
+      name: "executor-stale",
+      integration_type: "executor_registration",
+      endpoint: "http://127.0.0.1:4100",
+      validation_status: "pending",
+      active: true,
+      last_heartbeat_at: 10.minutes.ago
+    )
+
+    default_integration = BuildIntegration.create!(
+      name: "docker-default-fallback",
+      integration_type: "docker_host",
+      endpoint: "http://10.0.0.55:2375",
+      validation_status: "validated",
+      active: true,
+      default: true
+    )
+
+    application = Application.create!(
+      project: projects(:one),
+      name: "Dispatch Build Fallback App",
+      runtime: "ruby",
+      runtime_version: "4",
+      repository_url: "https://gitlab.example.com/tenant/dispatch-fallback.git",
+      repository_connection: repository_connections(:project_one_gitlab)
+    )
+
+    build = Build.create!(
+      application: application,
+      requested_by: users(:one),
+      status: "pending",
+      runtime_key: "ruby-4",
+      source_ref: "main",
+      commit_sha: "abc1234"
+    )
+
+    CapturingDockerValidator.last_endpoint = nil
+    result = Builds::DispatchPending.call(
+      build: build,
+      docker_access_validator: CapturingDockerValidator,
+      docker_executor: FakeDockerExecutorSuccess,
+      executor_dispatcher: FakeExecutorDispatcherSuccess
+    )
+
+    assert result.success?
+    assert_equal default_integration.endpoint, CapturingDockerValidator.last_endpoint
+    assert_equal default_integration.id, build.reload.build_integration_id
   end
 end

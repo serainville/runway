@@ -20,3 +20,10 @@ admin:
   name: Admin User
   role: admin
   password_digest: <%= BCrypt::Password.create("password123") %>
+
+three:
+  email: reviewer@example.com
+  username: reviewer
+  name: Reviewer User
+  role: member
+  password_digest: <%= BCrypt::Password.create("password123") %>

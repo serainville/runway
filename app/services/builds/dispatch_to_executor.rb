@@ -125,6 +125,13 @@ module Builds
       value
     end
 
+    def artifact_registry
+      value = ENV["RUNWAY_ARTIFACT_REGISTRY"].to_s.strip
+      value = executor_env_value("RUNWAY_ARTIFACT_REGISTRY") if value.empty?
+      value = "nexus" if value.empty?
+      value
+    end
+
     def executor_env_value(key)
       executor_env_config[key].to_s
     end
@@ -174,9 +181,9 @@ module Builds
           image: ENV.fetch("RUNWAY_EXECUTOR_BUILDER_IMAGE", "registry.example.com/runway/executor-builder:latest"),
           pull_policy: ENV.fetch("RUNWAY_EXECUTOR_BUILDER_PULL_POLICY", "IfNotPresent")
         },
-        steps: default_steps,
+        steps: Builds::ResolveBuildSteps.call(build: build),
         artifact: {
-          registry: ENV.fetch("RUNWAY_ARTIFACT_REGISTRY", "nexus"),
+          registry: artifact_registry,
           repository: "apps/#{app.project.slug}/#{app.slug}",
           tag: "sha-#{build.commit_sha}"
         },
@@ -192,14 +199,6 @@ module Builds
           requested_at: build.created_at.utc.iso8601
         }
       }
-    end
-
-    def default_steps
-      [
-        { name: "lint", command: ["bundle", "exec", "rubocop"], timeout_seconds: 600 },
-        { name: "test", command: ["bin", "rails", "test"], timeout_seconds: 1800 },
-        { name: "build", command: ["gcrane", "cp", "src:image", "dst:image"], timeout_seconds: 1200 }
-      ]
     end
 
     def parse_json(body)

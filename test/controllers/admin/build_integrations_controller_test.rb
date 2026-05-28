@@ -31,6 +31,8 @@ module Admin
 
       assert_response :success
       assert_match "Executor registrations", response.body
+      assert_match "Warning: Some active executor registrations are not ready for dispatch.", response.body
+      assert_match "Builds will fall back to the default Docker host", response.body
       assert_match "Offline", response.body
       assert_match "data-controller=\"auto-refresh\"", response.body
       assert_match "data-auto-refresh-interval-value=\"15000\"", response.body
@@ -47,6 +49,46 @@ module Admin
       assert_match "Delete", response.body
       assert_match "data-turbo-frame=\"_top\"", response.body
       assert_no_match "Update", response.body
+    end
+
+    test "executor readiness warning is hidden when active executors are validated and online" do
+      post session_url, params: { session: { username: users(:admin).username, password: "password123" } }
+
+      build_integrations(:executor_nonp).update!(active: false)
+      BuildIntegration.create!(
+        name: "executor-online",
+        integration_type: "executor_registration",
+        endpoint: "http://127.0.0.1:4300",
+        validation_status: "pending",
+        active: true,
+        last_heartbeat_at: Time.current
+      )
+
+      get executors_admin_build_integrations_url
+
+      assert_response :success
+      assert_no_match "Warning: Some active executor registrations are not ready for dispatch.", response.body
+    end
+
+    test "active online executor registration is considered ready even if validation is pending" do
+      post session_url, params: { session: { username: users(:admin).username, password: "password123" } }
+
+      build_integrations(:executor_nonp).update!(active: false)
+      BuildIntegration.create!(
+        name: "executor-ready",
+        integration_type: "executor_registration",
+        endpoint: "http://127.0.0.1:4400",
+        validation_status: "pending",
+        active: true,
+        last_heartbeat_at: Time.current
+      )
+
+      get executors_admin_build_integrations_url
+
+      assert_response :success
+      assert_no_match "Warning: Some active executor registrations are not ready for dispatch.", response.body
+      assert_match "Active", response.body
+      assert_match "Online", response.body
     end
 
     test "admin can open executor details page" do

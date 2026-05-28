@@ -220,18 +220,8 @@ RSpec.describe Executor::CommandServer do
       },
       "steps" => [
         {
-          "name" => "lint",
-          "command" => ["bundle", "exec", "rubocop"],
-          "timeout_seconds" => 600
-        },
-        {
-          "name" => "test",
-          "command" => ["bin", "rails", "test"],
-          "timeout_seconds" => 1800
-        },
-        {
           "name" => "build",
-          "command" => ["gcrane", "cp", "src:image", "dst:image"],
+          "command" => ["docker", "buildx", "build", "-t", "nexus/apps/team/app:sha-abc123def456", "--push", "."],
           "timeout_seconds" => 1200
         }
       ],

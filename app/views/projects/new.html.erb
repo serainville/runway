@@ -16,6 +16,13 @@
       <%= form.text_area :description, rows: 4, class: "w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/20 dark:border-white/10 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-500" %>
     </div>
 
+    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-white/10 dark:bg-slate-950/40">
+      <label class="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
+        <%= form.check_box :public, class: "h-4 w-4 rounded border-slate-300 text-fuchsia-600 focus:ring-fuchsia-500" %>
+        <span>Public project (read-only access for all signed-in users)</span>
+      </label>
+    </div>
+
     <div class="flex flex-wrap gap-3 pt-2">
       <%= form.submit "Create project", class: "rounded-full bg-fuchsia-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-fuchsia-500" %>
       <%= link_to "Back to dashboard", dashboard_path, class: "rounded-full border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/10" %>

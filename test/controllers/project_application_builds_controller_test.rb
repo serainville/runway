@@ -21,6 +21,7 @@ class ProjectApplicationBuildsControllerTest < ActionDispatch::IntegrationTest
     )
     BuildPhaseEvent.create!(build: build, phase: "image_build", status: "running", message: "Container image build started", reported_at: Time.current)
     BuildLogChunk.create!(build: build, phase: "image_build", sequence: 1, chunk: "building image", reported_at: Time.current)
+    BuildLogChunk.create!(build: build, phase: "image_build", sequence: 2, chunk: "stderr: [TRUNCATED] additional build output omitted", reported_at: Time.current)
     BuildHostRequestEvent.create!(
       build: build,
       request_method: "POST",
@@ -38,6 +39,7 @@ class ProjectApplicationBuildsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Build details"
     assert_includes response.body, "Build host request status"
     assert_includes response.body, "building image"
+    assert_includes response.body, "Logs were truncated due to size limits."
     assert_includes response.body, "data-controller=\"auto-refresh\""
     assert_includes response.body, "data-auto-refresh-enabled-value=\"true\""
     assert_includes response.body, "data-auto-refresh-target=\"label\""

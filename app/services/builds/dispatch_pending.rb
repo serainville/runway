@@ -97,7 +97,9 @@ module Builds
     attr_reader :build, :docker_access_validator, :docker_executor, :executor_dispatcher
 
     def resolve_build_integration
-      executor = BuildIntegration.where(integration_type: "executor_registration", active: true).order(last_heartbeat_at: :desc, created_at: :asc).first
+      executor = BuildIntegration.where(integration_type: "executor_registration", active: true)
+                                 .order(last_heartbeat_at: :desc, created_at: :asc)
+                                 .detect { |integration| integration.ready_for_executor_dispatch? }
       return executor if executor
 
       resolved = BuildIntegrations::ResolveDefaultIntegration.call

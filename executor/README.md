@@ -4,7 +4,7 @@ Standalone Ruby (non-Rails) service for build execution.
 
 Purpose:
 - Accept build commands.
-- Execute lint, test, and build phases through an adapter.
+- Execute build phase through an adapter.
 - Publish step and terminal callbacks.
 
 Current maturity:
@@ -51,6 +51,14 @@ Optional Docker execution values:
 - EXECUTOR_ENABLE_DOCKER_LOCAL_COMMANDS=false
 - EXECUTOR_DOCKER_DEFAULT_TIMEOUT_SECONDS=900
 - EXECUTOR_DOCKER_WORKDIR=/tmp/runway-executor
+- EXECUTOR_KEEP_WORKSPACE=false
+
+The executor clones the application source into a per-build subdirectory under `EXECUTOR_DOCKER_WORKDIR` before running the build step.
+Set `EXECUTOR_KEEP_WORKSPACE=true` to keep the workspace after execution for debugging.
+
+Build output behavior:
+- Docker BuildKit stdout/stderr is captured by the executor and sent in `step.updated` callback `logs` entries.
+- Runway persists those entries as build log chunks and shows them in the Build details page under Build Logs.
 
 Heartbeat values:
 - EXECUTOR_HEARTBEAT_ENABLED=true
@@ -60,10 +68,11 @@ Heartbeat values:
 
 ```bash
 cd /Users/srainville/Projects/Runway/executor
-set -a; source .env; set +a
 bundle install
 bundle exec ruby bin/server
 ```
+
+The executor loads `.env` automatically at startup, so manual `source .env` is no longer required.
 
 On startup, executor logs registration identity for heartbeat mapping:
 - `[executor] startup EXECUTOR_REGISTRATION_NAME=...`
@@ -99,8 +108,6 @@ cat > /tmp/build-command.json <<'JSON'
 		"pull_policy": "IfNotPresent"
 	},
 	"steps": [
-		{ "name": "lint", "command": ["echo", "lint"], "timeout_seconds": 60 },
-		{ "name": "test", "command": ["echo", "test"], "timeout_seconds": 60 },
 		{ "name": "build", "command": ["echo", "build"], "timeout_seconds": 60 }
 	],
 	"artifact": { "registry": "nexus", "repository": "apps/team/app", "tag": "sha-abc123" },

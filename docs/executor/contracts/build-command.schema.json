@@ -77,8 +77,8 @@
     },
     "steps": {
       "type": "array",
-      "minItems": 3,
-      "maxItems": 3,
+      "minItems": 1,
+      "maxItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -86,7 +86,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "enum": ["lint", "test", "build"]
+            "enum": ["build"]
           },
           "command": {
             "type": "array",

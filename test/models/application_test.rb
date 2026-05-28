@@ -20,4 +20,10 @@ class ApplicationTest < ActiveSupport::TestCase
 
     assert application.valid?
   end
+
+  test "defaults webhook_enabled to false" do
+    application = Application.new(team: teams(:one), name: "Webhook Flag App")
+
+    assert_equal false, application.webhook_enabled
+  end
 end

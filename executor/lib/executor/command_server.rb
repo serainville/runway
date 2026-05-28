@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "json"
+require "fileutils"
 require "securerandom"
 require "time"
 
@@ -9,6 +10,7 @@ require_relative "../../config/routes"
 require_relative "auth/verify_signature"
 require_relative "adapters/docker/run_step"
 require_relative "adapters/kubernetes/run_step"
+require_relative "builds/source_checkout"
 require_relative "builds/run_sequence"
 require_relative "builds/command_store"
 require_relative "builds/command_validator"
@@ -204,19 +206,41 @@ module Executor
     end
 
     def default_command_executor(command:)
-      adapter = build_adapter
+      source_checkout = Executor::Builds::SourceCheckout.new
+      checkout_result = source_checkout.call(command: command)
+      return failure_result(checkout_result) unless checkout_result.success?
+
+      adapter = build_adapter(workdir: checkout_result.workdir)
       Executor::Builds::RunSequence.new(adapter: adapter).call(command: command)
+    ensure
+      if defined?(checkout_result) && checkout_result&.workdir
+        if Executor::Config.keep_workspace?
+          puts "[executor] keeping workspace command_id=#{command['command_id']} path=#{checkout_result.workdir}"
+        else
+          FileUtils.rm_rf(checkout_result.workdir)
+          puts "[executor] cleaned workspace command_id=#{command['command_id']} path=#{checkout_result.workdir}"
+        end
+      end
     end
 
-    def build_adapter
+    def build_adapter(workdir: nil)
       case Executor::Config.backend_mode
       when "docker"
-        Executor::Adapters::Docker::RunStep.new
+        Executor::Adapters::Docker::RunStep.new(workdir: workdir || Executor::Config.docker_workdir)
       when "kubernetes"
         Executor::Adapters::Kubernetes::RunStep.new
       else
         raise ArgumentError, "Unsupported EXECUTOR_BACKEND_MODE: #{Executor::Config.backend_mode}"
       end
+    end
+
+    def failure_result(checkout_result)
+      {
+        ok: false,
+        build_status: "failed",
+        failure_code: checkout_result.error.to_s.upcase,
+        message: checkout_result.message
+      }
     end
 
     def generated_job_id(command_id)

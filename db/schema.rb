@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_27_201100) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_28_021201) do
   create_table "applications", force: :cascade do |t|
+    t.string "build_template", default: "buildkit", null: false
     t.datetime "created_at", null: false
     t.string "current_commit_sha"
     t.text "description"
@@ -25,6 +26,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_201100) do
     t.string "slug", null: false
     t.integer "team_id"
     t.datetime "updated_at", null: false
+    t.string "webhook_branch_filter", default: "", null: false
+    t.boolean "webhook_enabled", default: false, null: false
+    t.string "webhook_event_policy", default: "merge_only", null: false
+    t.index ["build_template"], name: "index_applications_on_build_template"
     t.index ["current_commit_sha"], name: "index_applications_on_current_commit_sha"
     t.index ["project_id", "name"], name: "index_applications_on_project_id_and_name", unique: true
     t.index ["project_id", "slug"], name: "index_applications_on_project_id_and_slug", unique: true
@@ -34,6 +39,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_201100) do
     t.index ["team_id", "name"], name: "index_applications_on_team_id_and_name", unique: true
     t.index ["team_id", "slug"], name: "index_applications_on_team_id_and_slug", unique: true
     t.index ["team_id"], name: "index_applications_on_team_id"
+    t.index ["webhook_enabled"], name: "index_applications_on_webhook_enabled"
+    t.index ["webhook_event_policy"], name: "index_applications_on_webhook_event_policy"
   end
 
   create_table "audit_events", force: :cascade do |t|
@@ -134,6 +141,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_201100) do
     t.string "source_ref", default: "main", null: false
     t.datetime "started_at"
     t.string "status", default: "pending", null: false
+    t.json "trigger_metadata", default: {}, null: false
+    t.string "trigger_source", default: "manual", null: false
     t.datetime "updated_at", null: false
     t.string "worker_id"
     t.index ["application_id", "created_at"], name: "index_builds_on_application_id_and_created_at"
@@ -143,6 +152,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_201100) do
     t.index ["requested_by_id"], name: "index_builds_on_requested_by_id"
     t.index ["runtime_container_id"], name: "index_builds_on_runtime_container_id"
     t.index ["status"], name: "index_builds_on_status"
+    t.index ["trigger_source"], name: "index_builds_on_trigger_source"
   end
 
   create_table "deployment_targets", force: :cascade do |t|
@@ -206,15 +216,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_201100) do
     t.index ["project_id", "user_id"], name: "index_project_memberships_on_project_id_and_user_id", unique: true
     t.index ["project_id"], name: "index_project_memberships_on_project_id"
     t.index ["user_id"], name: "index_project_memberships_on_user_id"
+    t.check_constraint "role IN ('owner', 'contributor', 'reviewer')", name: "chk_project_memberships_role"
   end
 
   create_table "projects", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name", null: false
+    t.boolean "public", default: false, null: false
     t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_projects_on_name", unique: true
+    t.index ["public"], name: "index_projects_on_public"
     t.index ["slug"], name: "index_projects_on_slug", unique: true
   end
 
@@ -230,9 +243,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_201100) do
     t.string "scope", default: "project", null: false
     t.datetime "updated_at", null: false
     t.string "validation_status", default: "pending", null: false
+    t.text "webhook_secret_ciphertext", default: "", null: false
     t.index ["project_id"], name: "index_repository_connections_on_project_id"
     t.index ["scope", "project_id", "name"], name: "index_repository_connections_on_scope_project_and_name", unique: true
     t.index ["validation_status"], name: "index_repository_connections_on_validation_status"
+  end
+
+  create_table "repository_webhook_events", force: :cascade do |t|
+    t.string "commit_sha"
+    t.datetime "created_at", null: false
+    t.string "delivery_id", null: false
+    t.string "error_reason"
+    t.string "event_type", null: false
+    t.string "payload_digest", null: false
+    t.datetime "processed_at"
+    t.string "provider", null: false
+    t.integer "repository_connection_id", null: false
+    t.string "repository_url"
+    t.string "source_ref"
+    t.string "status", null: false
+    t.datetime "updated_at", null: false
+    t.index ["processed_at"], name: "index_repository_webhook_events_on_processed_at"
+    t.index ["repository_connection_id", "provider", "delivery_id"], name: "index_repo_webhooks_on_conn_provider_delivery", unique: true
+    t.index ["repository_connection_id"], name: "index_repository_webhook_events_on_repository_connection_id"
+    t.index ["status"], name: "index_repository_webhook_events_on_status"
   end
 
   create_table "runtime_options", force: :cascade do |t|
@@ -285,4 +319,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_201100) do
   add_foreign_key "project_memberships", "projects"
   add_foreign_key "project_memberships", "users"
   add_foreign_key "repository_connections", "projects"
+  add_foreign_key "repository_webhook_events", "repository_connections"
 end

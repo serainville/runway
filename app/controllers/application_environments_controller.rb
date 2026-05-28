@@ -10,8 +10,8 @@ class ApplicationEnvironmentsController < ApplicationController
   private
 
   def set_project
-    @project = current_user.projects.find_by(id: params[:project_id])
-    return if @project
+    @project = Project.find_by(id: params[:project_id])
+    return if @project && Projects::AuthorizeAccess.call(actor: current_user, project: @project, action: :read)
 
     head :forbidden
   end

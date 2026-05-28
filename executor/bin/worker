@@ -3,6 +3,9 @@
 
 require "json"
 
+require_relative "../lib/executor/env_loader"
+Executor::EnvLoader.load!
+
 require_relative "../config/app"
 require_relative "../lib/executor/builds/run_sequence"
 require_relative "../lib/executor/adapters/docker/run_step"

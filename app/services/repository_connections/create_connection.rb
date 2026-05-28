@@ -25,6 +25,7 @@ module RepositoryConnections
         auth_username: params[:auth_username],
         ca_bundle: params[:ca_bundle].to_s,
         auth_secret_ciphertext: RepositoryConnections::CredentialCipher.encrypt(params[:auth_secret]),
+        webhook_secret_ciphertext: encrypt_webhook_secret,
         validation_status: "pending"
       )
 
@@ -52,8 +53,9 @@ module RepositoryConnections
 
     def authorized?
       return actor&.admin? if scope == "global"
+      return false unless project
 
-      ProjectMembership.exists?(project_id: project&.id, user_id: actor&.id, role: "owner")
+      Projects::AuthorizeAccess.call(actor: actor, project: project, action: :manage_settings)
     end
 
     def scoped_project
@@ -62,6 +64,12 @@ module RepositoryConnections
 
     def forbidden
       Result.new(success?: false, error: :forbidden, message: "Not authorized")
+    end
+
+    def encrypt_webhook_secret
+      return "" if params[:webhook_secret].blank?
+
+      RepositoryConnections::CredentialCipher.encrypt(params[:webhook_secret])
     end
   end
 end

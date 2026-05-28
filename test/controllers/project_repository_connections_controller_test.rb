@@ -98,6 +98,29 @@ class ProjectRepositoryConnectionsControllerTest < ActionDispatch::IntegrationTe
     assert_equal "rotated-project-token", connection.auth_secret
   end
 
+  test "project owner can rotate project repository webhook secret" do
+    post session_url, params: { session: { username: users(:one).username, password: "password123" } }
+
+    connection = repository_connections(:project_one_gitlab)
+    original_webhook_ciphertext = connection.webhook_secret_ciphertext
+
+    patch project_repository_connection_url(projects(:one), connection), params: {
+      repository_connection: {
+        name: connection.name,
+        provider: connection.provider,
+        endpoint_url: connection.endpoint_url,
+        auth_username: connection.auth_username,
+        auth_secret: "",
+        webhook_secret: "rotated-webhook-secret",
+        ca_bundle: connection.ca_bundle
+      }
+    }
+
+    assert_redirected_to project_repository_connection_url(projects(:one), connection)
+    assert_not_equal original_webhook_ciphertext, connection.reload.webhook_secret_ciphertext
+    assert_equal "rotated-webhook-secret", connection.webhook_secret
+  end
+
   test "non-owner cannot update a project repository connection" do
     post session_url, params: { session: { username: users(:two).username, password: "password123" } }
 

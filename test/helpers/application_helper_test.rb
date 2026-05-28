@@ -1,6 +1,10 @@
 require "test_helper"
 
 class ApplicationHelperTest < ActionView::TestCase
+  def current_user
+    @test_current_user
+  end
+
   test "application_runtime_label uses catalog display name" do
     application = Application.new(runtime: "ruby", runtime_version: "4")
 
@@ -37,5 +41,18 @@ class ApplicationHelperTest < ActionView::TestCase
     user = User.new(id: 42, name: "Jane Doe", username: "janedoe", email: "jane@example.com")
 
     assert_equal user_avatar_style(user), user_avatar_style(user)
+  end
+
+  test "project policy helpers reflect role permissions" do
+    @test_current_user = users(:one)
+    assert can_manage_project_settings?(projects(:one))
+    assert can_initiate_build_for_project?(projects(:one))
+
+    @test_current_user = users(:three)
+    assert_not can_manage_project_settings?(projects(:one))
+    assert_not can_initiate_build_for_project?(projects(:one))
+
+    @test_current_user = users(:two)
+    assert can_read_project?(projects(:public_one))
   end
 end

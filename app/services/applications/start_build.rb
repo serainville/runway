@@ -40,7 +40,9 @@ module Applications
           status: "pending",
           runtime_key: runtime_key,
           source_ref: source_ref,
-          commit_sha: commit_sha[:commit_sha]
+          commit_sha: commit_sha[:commit_sha],
+          trigger_source: trigger_source,
+          trigger_metadata: trigger_metadata
         )
 
         AuditEvents::Record.call(
@@ -51,7 +53,8 @@ module Applications
             application_id: application.id,
             project_id: project.id,
             source_ref: source_ref,
-            commit_sha: commit_sha[:commit_sha]
+            commit_sha: commit_sha[:commit_sha],
+            trigger_source: trigger_source
           }
         )
       end
@@ -68,7 +71,7 @@ module Applications
     attr_reader :actor, :project, :application, :params, :queue_job, :head_commit_fetcher
 
     def authorized?
-      ProjectMembership.exists?(project_id: project.id, user_id: actor.id)
+      Projects::AuthorizeAccess.call(actor: actor, project: project, action: :initiate_build)
     end
 
     def runtime_key
@@ -103,6 +106,20 @@ module Applications
       return { success?: true, commit_sha: application.current_commit_sha } if application.current_commit_sha.present?
 
       { success?: false, message: result.message.presence || "Runway could not determine the current commit hash" }
+    end
+
+    def trigger_source
+      value = params[:trigger_source].to_s
+      return "webhook" if value == "webhook"
+
+      "manual"
+    end
+
+    def trigger_metadata
+      metadata = params[:trigger_metadata]
+      return {} unless metadata.is_a?(Hash)
+
+      metadata.slice(:provider, :delivery_id, :event_type, :repository_url, :source_ref, :commit_sha).to_h
     end
   end
 end

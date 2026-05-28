@@ -79,7 +79,7 @@ module Applications
     attr_reader :actor, :project, :params
 
     def authorized?
-      ProjectMembership.exists?(project_id: project.id, user_id: actor.id)
+      Projects::AuthorizeAccess.call(actor: actor, project: project, action: :initiate_build)
     end
 
     def app_params

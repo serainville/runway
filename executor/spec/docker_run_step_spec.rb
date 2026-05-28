@@ -82,10 +82,14 @@ RSpec.describe Executor::Adapters::Docker::RunStep do
     end
 
     adapter = described_class.new(enable_local_commands: true, command_runner: runner)
-    result = adapter.run_step(command: command_payload, step_name: "build")
 
-    expect(result[:status]).to eq("failed")
-    expect(result[:failure_code]).to eq("IMAGE_BUILD_FAILED")
+    expect do
+      result = adapter.run_step(command: command_payload, step_name: "build")
+
+      expect(result[:status]).to eq("failed")
+      expect(result[:failure_code]).to eq("IMAGE_BUILD_FAILED")
+      expect(result[:message]).to eq("build failed")
+    end.to output(/Docker adapter step: command_id=cmd_01hvdocker step=build/).to_stderr
   end
 
   it "maps timeout to worker timeout code" do
@@ -98,6 +102,51 @@ RSpec.describe Executor::Adapters::Docker::RunStep do
 
     expect(result[:status]).to eq("failed")
     expect(result[:failure_code]).to eq("WORKER_TIMEOUT")
+  end
+
+  it "returns structured logs from stdout and stderr output" do
+    runner = lambda do |argv:, timeout_seconds:, workdir:|
+      {
+        exit_code: 1,
+        stdout: "#1 load context\n#2 build done",
+        stderr: "#3 push failed"
+      }
+    end
+
+    adapter = described_class.new(enable_local_commands: true, command_runner: runner)
+    result = adapter.run_step(command: command_payload, step_name: "build")
+
+    expect(result[:logs]).to eq([
+      { sequence: 1, stream: "stdout", message: "#1 load context" },
+      { sequence: 2, stream: "stdout", message: "#2 build done" },
+      { sequence: 3, stream: "stderr", message: "#3 push failed" }
+    ])
+  end
+
+  it "caps log volume and emits truncation markers" do
+    long_line = "a" * (described_class::MAX_LOG_MESSAGE_LENGTH + 100)
+    extra_lines = (1..(described_class::MAX_LOG_ENTRIES + 20)).map { |index| "line-#{index}" }.join("\n")
+
+    runner = lambda do |argv:, timeout_seconds:, workdir:|
+      {
+        exit_code: 1,
+        stdout: "#{long_line}\n#{extra_lines}",
+        stderr: ""
+      }
+    end
+
+    adapter = described_class.new(enable_local_commands: true, command_runner: runner)
+    result = adapter.run_step(command: command_payload, step_name: "build")
+
+    expect(result[:logs].length).to eq(described_class::MAX_LOG_ENTRIES)
+    expect(result[:logs].first[:message]).to end_with(described_class::LINE_TRUNCATION_SUFFIX)
+    expect(result[:logs].last).to eq(
+      {
+        sequence: described_class::MAX_LOG_ENTRIES,
+        stream: "stderr",
+        message: described_class::OUTPUT_TRUNCATED_NOTICE
+      }
+    )
   end
 
   def command_payload

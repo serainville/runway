@@ -6,7 +6,7 @@ require "json_schemer"
 module Executor
   module Builds
     class CommandValidator
-      EXPECTED_STEP_ORDER = %w[lint test build].freeze
+      EXPECTED_STEP_ORDER = %w[build].freeze
 
       def initialize(schema_path: default_schema_path)
         @schema_path = schema_path
@@ -41,7 +41,7 @@ module Executor
         [
           {
             path: "/steps",
-            message: "must be ordered as lint, test, build"
+            message: "must include only build"
           }
         ]
       end

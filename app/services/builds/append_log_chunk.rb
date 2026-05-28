@@ -2,10 +2,15 @@ module Builds
   class AppendLogChunk
     Result = Struct.new(:success?, :log_chunk, :error, :message, keyword_init: true)
 
+    MAX_CHUNK_LENGTH = 16_384
+    CHUNK_TRUNCATION_SUFFIX = " ... [TRUNCATED]"
+
     REDACTION_PATTERNS = [
       /(password\s*[:=]\s*)\S+/i,
       /(token\s*[:=]\s*)\S+/i,
-      /(secret\s*[:=]\s*)\S+/i
+      /(secret\s*[:=]\s*)\S+/i,
+      /(authorization\s*[:=]\s*bearer\s+)\S+/i,
+      /(api[_-]?key\s*[:=]\s*)\S+/i
     ].freeze
 
     def self.call(build_id:, lease_id:, phase:, sequence:, chunk:, reported_at: Time.current)
@@ -28,7 +33,7 @@ module Builds
 
       log_chunk = BuildLogChunk.find_or_initialize_by(build: build, phase: phase, sequence: sequence)
       if log_chunk.new_record?
-        log_chunk.chunk = redact(chunk)
+        log_chunk.chunk = sanitize_chunk(chunk)
         log_chunk.reported_at = reported_at
         log_chunk.save!
       end
@@ -41,6 +46,14 @@ module Builds
     private
 
     attr_reader :build_id, :lease_id, :phase, :sequence, :chunk, :reported_at
+
+    def sanitize_chunk(value)
+      text = redact(value.to_s)
+      return text if text.length <= MAX_CHUNK_LENGTH
+
+      allowed = MAX_CHUNK_LENGTH - CHUNK_TRUNCATION_SUFFIX.length
+      "#{text[0, allowed]}#{CHUNK_TRUNCATION_SUFFIX}"
+    end
 
     def redact(value)
       redacted = value.to_s

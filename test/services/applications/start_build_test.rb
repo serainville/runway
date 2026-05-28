@@ -32,7 +32,12 @@ class ApplicationsStartBuildTest < ActiveSupport::TestCase
           actor: users(:one),
           project: projects(:one),
           application: application,
-          params: { source_ref: "main", commit_sha: "a" * 40 },
+          params: {
+            source_ref: "main",
+            commit_sha: "a" * 40,
+            trigger_source: "webhook",
+            trigger_metadata: { provider: "github", delivery_id: "evt-1", event_type: "merge" }
+          },
           queue_job: FakeQueueJob,
           head_commit_fetcher: FakeHeadCommitFetcher
         )
@@ -40,6 +45,8 @@ class ApplicationsStartBuildTest < ActiveSupport::TestCase
         assert result.success?
         assert_equal "pending", result.build.status
         assert_equal application, result.build.application
+        assert_equal "webhook", result.build.trigger_source
+        assert_equal "github", result.build.trigger_metadata["provider"]
       end
     end
 
@@ -60,6 +67,29 @@ class ApplicationsStartBuildTest < ActiveSupport::TestCase
 
     result = Applications::StartBuild.call(
       actor: users(:two),
+      project: projects(:one),
+      application: application,
+      params: { source_ref: "main", commit_sha: "abc1234" },
+      queue_job: FakeQueueJob,
+      head_commit_fetcher: FakeHeadCommitFetcher
+    )
+
+    assert_not result.success?
+    assert_equal :forbidden, result.error
+  end
+
+  test "reviewer cannot request a build" do
+    application = Application.create!(
+      project: projects(:one),
+      name: "Reviewer Build App",
+      runtime: "ruby",
+      runtime_version: "4",
+      repository_url: "https://gitlab.example.com/tenant/reviewer-build.git",
+      repository_connection: repository_connections(:project_one_gitlab)
+    )
+
+    result = Applications::StartBuild.call(
+      actor: users(:three),
       project: projects(:one),
       application: application,
       params: { source_ref: "main", commit_sha: "abc1234" },

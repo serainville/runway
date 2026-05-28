@@ -156,12 +156,18 @@ module Internal
           message = entry["message"].to_s
           next if sequence.blank? || message.blank?
 
-          build.build_log_chunks.find_or_create_by!(
+          result = ::Builds::AppendLogChunk.call(
+            build_id: build.id,
+            lease_id: build.lease_id,
             phase: phase,
             sequence: sequence,
             chunk: [entry["stream"], message].compact.join(": "),
             reported_at: parse_time(event_time)
           )
+
+          unless result.success?
+            Rails.logger.warn("Executor callback log append failed: build_id=#{build.id} phase=#{phase} sequence=#{sequence} error=#{result.error} message=#{result.message}")
+          end
         end
       end
 

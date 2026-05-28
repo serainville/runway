@@ -45,7 +45,7 @@ module RepositoryConnections
     attr_reader :actor, :project, :repository_connection_id, :list_client
 
     def authorized?
-      project && ProjectMembership.exists?(project_id: project.id, user_id: actor.id)
+      Projects::AuthorizeAccess.call(actor: actor, project: project, action: :initiate_build)
     end
 
     def available_connections

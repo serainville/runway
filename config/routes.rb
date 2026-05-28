@@ -28,11 +28,20 @@ Rails.application.routes.draw do
     end
   end
   resources :projects, only: [:index, :show, :new, :create] do
+    resource :settings, only: [:show, :update], controller: :project_settings
+    resources :memberships, only: [:index, :create, :update, :destroy], controller: :project_memberships do
+      collection do
+        get :search_users
+      end
+    end
     resources :repository_connections, only: [:index, :show, :create, :update, :destroy], controller: :project_repository_connections do
       patch :validate_connection, on: :member
     end
     resources :applications, only: [:index, :show, :new, :create], controller: :project_applications do
       post :start_build, on: :member
+      patch :update_webhook, on: :member
+      patch :update_build_template, on: :member
+      get "events/:event_key", to: "project_application_events#show", on: :member, as: :event
       collection do
         get :discover_repositories
         post :verify_repository_access
@@ -43,6 +52,8 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  post "webhooks/:provider/:repository_connection_id", to: "webhooks/repository_events#create", as: :repository_webhook
 
   namespace :internal do
     post "build-executor/callbacks", to: "build_executor/callbacks#create"

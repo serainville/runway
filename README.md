@@ -69,6 +69,8 @@ Deferred beyond MVP:
 ## Core Concepts
 
 - Project: primary ownership boundary.
+- Project roles: Owner, Contributor, Reviewer.
+- Project visibility: private (members only) or public (authenticated read-only by default).
 - Application: deployable software unit inside a project.
 - Environment: isolated target for deployments (for example nonp).
 - Build: quality-gated artifact creation (lint/tests/image).
@@ -84,6 +86,8 @@ Runway supports reusable repository connections:
 
 - Global connections (admin-managed)
 - Project-scoped connections (project-owner managed)
+
+Runway also supports inbound webhooks for GitLab, GitHub, and Bitbucket. A merged merge-request or pull-request event can automatically request a build when the target application has webhook triggers enabled.
 
 When creating an app, users choose a connection and either paste a repository URL or select an accessible repository. Runway validates endpoint/auth/repository access before app creation.
 

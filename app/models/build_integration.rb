@@ -43,6 +43,12 @@ class BuildIntegration < ApplicationRecord
     integration_type == "executor_registration"
   end
 
+  def ready_for_executor_dispatch?(now: Time.current)
+    return active? && validation_status == "validated" unless executor_registration?
+
+    active? && executor_heartbeat_status(now: now) == "online"
+  end
+
   def executor_heartbeat_status(now: Time.current, offline_after_seconds: self.class.executor_offline_after_seconds)
     return "unknown" unless executor_registration?
     return "unknown" if last_heartbeat_at.blank?

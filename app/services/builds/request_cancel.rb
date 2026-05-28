@@ -46,7 +46,7 @@ module Builds
     attr_reader :actor, :project, :application, :build
 
     def authorized?
-      actor.projects.exists?(id: project.id)
+      Projects::AuthorizeAccess.call(actor: actor, project: project, action: :initiate_build)
     end
   end
 end

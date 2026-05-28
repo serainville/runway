@@ -71,5 +71,9 @@ module Executor
     def docker_workdir
       ENV.fetch("EXECUTOR_DOCKER_WORKDIR", Dir.pwd)
     end
+
+    def keep_workspace?
+      ENV.fetch("EXECUTOR_KEEP_WORKSPACE", "false") == "true"
+    end
   end
 end

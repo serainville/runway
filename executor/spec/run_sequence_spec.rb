@@ -17,20 +17,21 @@ RSpec.describe Executor::Builds::RunSequence do
     expect(event_types).to eq([
       "step.updated",
       "step.updated",
-      "step.updated",
-      "step.updated",
-      "step.updated",
-      "step.updated",
       "build.completed"
     ])
 
     completed = publisher.payloads.last
     expect(completed["result"]["status"]).to eq("succeeded")
     expect(completed["result"]["artifact_ref"]).to eq("nexus/apps/team/app:sha-abc123")
+
+    finished_step_event = publisher.payloads[1]
+    expect(finished_step_event["logs"]).to eq([
+      { "sequence" => 1, "stream" => "stdout", "message" => "build output line" }
+    ])
   end
 
-  it "publishes terminal failed event when a step fails" do
-    adapter = FailingAdapter.new(fail_on: "test")
+  it "publishes terminal failed event when build step fails" do
+    adapter = FailingAdapter.new(fail_on: "build")
     publisher = RecordingPublisher.new
 
     runner = described_class.new(adapter: adapter, publisher: publisher)
@@ -42,12 +43,12 @@ RSpec.describe Executor::Builds::RunSequence do
     completed = publisher.payloads.last
     expect(completed["event_type"]).to eq("build.completed")
     expect(completed["result"]["status"]).to eq("failed")
-    expect(completed["result"]["failure_code"]).to eq("TEST_ASSERTION_FAILED")
+    expect(completed["result"]["failure_code"]).to eq("IMAGE_BUILD_FAILED")
 
     step_names = publisher.payloads.filter_map do |payload|
       payload.dig("step", "name") if payload["event_type"] == "step.updated"
     end
-    expect(step_names).to eq(["lint", "lint", "test", "test"])
+    expect(step_names).to eq(["build", "build"])
   end
 
   class RecordingPublisher
@@ -73,7 +74,10 @@ RSpec.describe Executor::Builds::RunSequence do
         status: "succeeded",
         exit_code: 0,
         message: "#{step_name} ok",
-        failure_code: nil
+        failure_code: nil,
+        logs: [
+          { "sequence" => 1, "stream" => "stdout", "message" => "build output line" }
+        ]
       }
     end
   end
@@ -90,7 +94,7 @@ RSpec.describe Executor::Builds::RunSequence do
         status: "failed",
         exit_code: 1,
         message: "#{step_name} failed",
-        failure_code: "TEST_ASSERTION_FAILED"
+        failure_code: "IMAGE_BUILD_FAILED"
       }
     end
 
@@ -115,7 +119,14 @@ RSpec.describe Executor::Builds::RunSequence do
         "registry" => "nexus",
         "repository" => "apps/team/app",
         "tag" => "sha-abc123"
-      }
+      },
+      "steps" => [
+        {
+          "name" => "build",
+          "command" => ["docker", "buildx", "build", "-t", "nexus/apps/team/app:sha-abc123", "--push", "."],
+          "timeout_seconds" => 1200
+        }
+      ]
     }
   end
 end

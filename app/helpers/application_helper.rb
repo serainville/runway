@@ -34,6 +34,22 @@ module ApplicationHelper
     "background-color: #{color};"
   end
 
+  def can_read_project?(project)
+    Projects::AuthorizeAccess.call(actor: current_user, project: project, action: :read)
+  end
+
+  def can_manage_project_settings?(project)
+    Projects::AuthorizeAccess.call(actor: current_user, project: project, action: :manage_settings)
+  end
+
+  def can_manage_project_members?(project)
+    Projects::AuthorizeAccess.call(actor: current_user, project: project, action: :manage_members)
+  end
+
+  def can_initiate_build_for_project?(project)
+    Projects::AuthorizeAccess.call(actor: current_user, project: project, action: :initiate_build)
+  end
+
   def application_runtime_label(application)
     runtime_key = runtime_key_for(application)
     runtime_item = Runtimes::Catalog.find(runtime_key)

@@ -69,6 +69,8 @@ module Admin
         runtime_container_id: "container-123",
         runtime_status: "running"
       )
+      BuildLogChunk.create!(build: build, phase: "image_build", sequence: 1, chunk: "docker build output", reported_at: Time.current)
+      BuildLogChunk.create!(build: build, phase: "image_build", sequence: 2, chunk: "stderr: [TRUNCATED] additional build output omitted", reported_at: Time.current)
 
       post session_url, params: { session: { username: users(:admin).username, password: "password123" } }
 
@@ -77,6 +79,8 @@ module Admin
       assert_response :success
       assert_includes response.body, "Build details"
       assert_includes response.body, "container-123"
+      assert_includes response.body, "Build logs"
+      assert_includes response.body, "Logs were truncated due to size limits."
       assert_includes response.body, "data-controller=\"auto-refresh\""
       assert_includes response.body, "data-auto-refresh-enabled-value=\"false\""
       assert_includes response.body, "data-auto-refresh-target=\"label\""
