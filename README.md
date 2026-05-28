@@ -107,6 +107,8 @@ Each build runs strict ordered quality gates:
 
 Only successful progression produces a deployable image reference (digest).
 
+![Build details](screenshot-build-details.png)
+
 ### 4) Create immutable release
 
 A successful build produces a release record containing immutable deployment inputs (artifact digest, git SHA, metadata).
